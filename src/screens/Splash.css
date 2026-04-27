@@ -1,0 +1,103 @@
+.splash {
+  background: var(--red);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 60px 32px 52px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* decorative translucent circles (top-right area) */
+.splash-deco {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+.splash-deco-1 {
+  width: 280px;
+  height: 280px;
+  top: -80px;
+  right: -80px;
+}
+.splash-deco-2 {
+  width: 180px;
+  height: 180px;
+  top: 20px;
+  right: 20px;
+}
+
+.splash-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.splash-logo-wrap {
+  margin-bottom: 8px;
+}
+
+.splash-logo-svg {
+  display: block;
+}
+
+.splash-title {
+  color: var(--white);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-align: center;
+}
+
+.splash-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 240px;
+}
+
+.splash-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.btn-primary {
+  background: var(--white);
+  color: var(--red);
+  border: none;
+  border-radius: 50px;
+  height: 52px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50px;
+  height: 52px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btn-outline:active {
+  border-color: var(--white);
+}
