@@ -1,41 +1,23 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import "tailwindcss";
 
-:root {
-  --red: #C8192A;
-  --red-dark: #A8141F;
-  --white: #ffffff;
-  --gray-100: #f8f8f8;
-  --gray-200: #eeeeee;
-  --gray-400: #bdbdbd;
-  --gray-600: #757575;
-  --gray-800: #424242;
-  --text: #1a1a1a;
-  --font: 'Segoe UI', system-ui, sans-serif;
+@theme {
+  --color-primary: #D01F25;
+  --color-primary-dark: #A5171D;
+  --color-bg: #F3F4F6;
+  --color-text: #1F2937;
+  --color-text-light: #6B7280;
+  --color-card: #FFFFFF;
 }
 
 body {
-  font-family: var(--font);
-  background: #d0d0d0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-#root {
-  width: 390px;
-  min-height: 100vh;
-  background: var(--white);
-  position: relative;
-  overflow-x: hidden;
-  box-shadow: 0 0 40px rgba(0,0,0,0.3);
-}
-
-@media (max-width: 430px) {
-  body { background: var(--white); }
-  #root { width: 100%; box-shadow: none; }
+/* Remove default scrollbar for aesthetics */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
 }

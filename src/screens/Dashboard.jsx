@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import './Dashboard.css'
+import { Scale, Droplets, ClipboardList, ChevronRight } from 'lucide-react'
+import BottomNav from '../components/BottomNav'
 
 const stats = [
   { value: '0.9 L/h', label: 'Taxa Média' },
@@ -14,6 +15,8 @@ const fluxo = [
     sub: 'Pesagem + condições ambientais',
     badge: 'FAZER',
     path: '/pre-sessao',
+    icon: Scale,
+    active: true
   },
   {
     id: 2,
@@ -21,6 +24,8 @@ const fluxo = [
     sub: 'Registro de fluidos em tempo real',
     badge: null,
     path: null,
+    icon: Droplets,
+    active: false
   },
   {
     id: 3,
@@ -28,6 +33,8 @@ const fluxo = [
     sub: 'Pesagem final + sintomas',
     badge: null,
     path: null,
+    icon: Scale,
+    active: false
   },
   {
     id: 4,
@@ -35,84 +42,82 @@ const fluxo = [
     sub: 'Taxa de sudorese + recomendações',
     badge: null,
     path: null,
+    icon: ClipboardList,
+    active: false
   },
-]
-
-const navItems = [
-  { label: 'Início', active: true },
-  { label: 'Histórico', active: false },
 ]
 
 export default function Dashboard() {
   const navigate = useNavigate()
 
   return (
-    <div className="dash">
-      {/* Status bar */}
-      <div className="statusbar">9:41</div>
-
-      {/* Header */}
-      <div className="dash-header">
-        <h1 className="dash-greeting">Olá, João</h1>
-        <p className="dash-sub">Pronto para registrar a sessão de hoje?</p>
+    <div className="min-h-screen pb-24 bg-[var(--color-bg)] font-sans">
+      
+      {/* Header curvado */}
+      <div className="bg-[var(--color-primary)] text-white pt-12 pb-20 px-6 rounded-b-[40px] shadow-md relative overflow-hidden">
+        {/* Elemento decorativo */}
+        <div className="absolute -top-24 -right-12 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+        
+        <div className="relative z-10 flex items-center gap-2 mb-1">
+          <h1 className="text-3xl font-bold tracking-tight">Olá, João</h1>
+          <span className="text-2xl animate-bounce">👋</span>
+        </div>
+        <p className="text-white/90 text-sm font-medium">Pronto para registrar a sessão de hoje?</p>
       </div>
 
-      {/* Stats card */}
-      <div className="stats-card">
-        {stats.map((s) => (
-          <div key={s.label} className="stat-item">
-            <span className="stat-value">{s.value}</span>
-            <span className="stat-label">{s.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Session flow */}
-      <div className="dash-section">
-        <h2 className="section-title">Fluxo da Sessão</h2>
-
-        <div className="flow-card">
-          {fluxo.map((item, i) => (
-            <div key={item.id}>
-              <button
-                className="flow-item"
-                onClick={() => item.path && navigate(item.path)}
-                style={{ cursor: item.path ? 'pointer' : 'default' }}
-              >
-                <div className="flow-text">
-                  <span className="flow-title" style={{ color: item.badge ? 'var(--red)' : 'var(--text)' }}>
-                    {item.title}
-                  </span>
-                  <span className="flow-sub">{item.sub}</span>
-                </div>
-                <div className="flow-right">
-                  {item.badge && <span className="flow-badge">{item.badge}</span>}
-                  <span className="flow-arrow">›</span>
-                </div>
-              </button>
-              {i < fluxo.length - 1 && <div className="flow-divider" />}
+      {/* Stats Card flutuante */}
+      <div className="px-6 -mt-12 relative z-20">
+        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-5 flex justify-between items-center ring-1 ring-gray-100 backdrop-blur-xl">
+          {stats.map((s, i) => (
+            <div key={s.label} className={`flex flex-col items-center flex-1 ${i !== stats.length - 1 ? 'border-r border-gray-100' : ''}`}>
+              <span className="text-gray-800 font-bold text-lg">{s.value}</span>
+              <span className="text-gray-400 text-xs mt-0.5">{s.label}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Bottom navigation */}
-      <nav className="bottom-nav">
-        {navItems.map((n) => (
-          <button key={n.label} className={`nav-btn ${n.active ? 'nav-btn--active' : ''}`}>
-            <span className="nav-label">{n.label}</span>
-          </button>
-        ))}
+      {/* Session flow */}
+      <div className="px-6 mt-8">
+        <h2 className="text-gray-800 font-bold text-lg mb-4">Fluxo da Sessão</h2>
 
-        <button className="nav-fab">+</button>
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
+          {fluxo.map((item, i) => (
+            <div key={item.id} className="relative">
+              <button
+                className={`w-full text-left p-4 flex items-center gap-4 transition-colors ${item.active ? 'hover:bg-gray-50' : 'opacity-60 cursor-not-allowed'}`}
+                onClick={() => item.path && navigate(item.path)}
+                disabled={!item.active}
+              >
+                <div className={`p-3 rounded-full ${item.active ? 'bg-red-50 text-[var(--color-primary)]' : 'bg-gray-50 text-gray-400'}`}>
+                  <item.icon className="w-5 h-5" />
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`font-semibold ${item.active ? 'text-gray-800' : 'text-gray-500'}`}>
+                      {item.title}
+                    </span>
+                    {item.badge && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-[var(--color-primary)]">
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-gray-400 mt-0.5 block">{item.sub}</span>
+                </div>
 
-        <button className="nav-btn">
-          <span className="nav-label">Relatório</span>
-        </button>
-        <button className="nav-btn">
-          <span className="nav-label">Perfil</span>
-        </button>
-      </nav>
+                <div className="text-gray-300">
+                  <ChevronRight className="w-5 h-5" />
+                </div>
+              </button>
+              {i < fluxo.length - 1 && <div className="h-[1px] bg-gray-100 ml-16" />}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <BottomNav />
     </div>
   )
 }
