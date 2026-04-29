@@ -160,7 +160,7 @@ export default function PreSessao() {
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent z-20 pb-8">
         <button 
           className="w-full bg-[var(--color-primary)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all flex items-center justify-center gap-2"
-          onClick={() => alert('Sessão iniciada!')}
+          onClick={() => navigate('/durante-sessao')}
         >
           Iniciar Sessão
         </button>
