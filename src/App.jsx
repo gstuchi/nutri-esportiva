@@ -5,6 +5,7 @@ import PreSessao from './screens/PreSessao'
 import DuranteSessao from './screens/DuranteSessao'
 import PosSessao from './screens/PosSessao'
 import ResultadoSessao from './screens/ResultadoSessao'
+import Historico from './screens/Historico'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/durante-sessao" element={<DuranteSessao />} />
         <Route path="/pos-sessao" element={<PosSessao />} />
         <Route path="/resultado-sessao" element={<ResultadoSessao />} />
+        <Route path="/historico" element={<Historico />} />
       </Routes>
     </BrowserRouter>
   )
