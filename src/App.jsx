@@ -7,6 +7,7 @@ import PosSessao from './screens/PosSessao'
 import ResultadoSessao from './screens/ResultadoSessao'
 import Triagem from './screens/Triagem'
 import Relatorio from './screens/Relatorio'
+import TriagemRiscoMOB from './screens/TriagemRiscoMOB'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/resultado-sessao" element={<ResultadoSessao />} />
         <Route path="/triagem-de-risco" element={<Triagem />} />
         <Route path="/relatorios" element={<Relatorio />} />
+        <Route path="/triagem-risco-mob" element={<TriagemRiscoMOB />} />
       </Routes>
     </BrowserRouter>
   )
