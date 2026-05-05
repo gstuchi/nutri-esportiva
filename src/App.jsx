@@ -21,11 +21,6 @@ export default function App() {
         <Route path="/durante-sessao" element={<DuranteSessao />} />
         <Route path="/pos-sessao" element={<PosSessao />} />
         <Route path="/resultado-sessao" element={<ResultadoSessao />} />
-        <Route path="/triagem-de-risco" element={<Triagem />} />
-        <Route path="/relatorios" element={<Relatorio />} />
-        <Route path="/triagem-risco-mob" element={<TriagemRiscoMOB />} />
-        <Route path="/sudorese-atleta" element={<SudoreseAtletaDESK />} />
-        <Route path="/atletas" element={<AtletasDESK />} />
       </Routes>
     </BrowserRouter>
   )
