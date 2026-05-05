@@ -9,6 +9,7 @@ import Triagem from './screens/Triagem'
 import Relatorio from './screens/Relatorio'
 import TriagemRiscoMOB from './screens/TriagemRiscoMOB'
 import SudoreseAtletaDESK from './screens/SudoreseAtletaDESK'
+import AtletasDESK from './screens/AtletasDESK'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/relatorios" element={<Relatorio />} />
         <Route path="/triagem-risco-mob" element={<TriagemRiscoMOB />} />
         <Route path="/sudorese-atleta" element={<SudoreseAtletaDESK />} />
+        <Route path="/atletas" element={<AtletasDESK />} />
       </Routes>
     </BrowserRouter>
   )
