@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Scale, Droplets, ClipboardList, ChevronRight } from 'lucide-react'
-import BottomNav from '../components/BottomNav'
+import BottomNav from '../../components/mobile/BottomNav'
 
 const stats = [
   { value: '0.9 L/h', label: 'Taxa Média' },

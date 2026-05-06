@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, AlertTriangle, Droplet, FlaskConical, Heart, Brain, Lightbulb, CheckCircle2, ClipboardList } from 'lucide-react'
 
-export default function TriagemRiscoMOB() {
+export default function TriagemRisco() {
   const navigate = useNavigate()
 
   return (
     <div className="min-h-screen pb-32 bg-[var(--color-bg)] font-sans">
 
-      {/* header */}
+      {/* HEADER */}
       <div className="bg-[var(--color-primary)] text-white pt-12 pb-20 px-4 rounded-b-[30px] shadow-md relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -25,6 +25,7 @@ export default function TriagemRiscoMOB() {
         </div>
       </div>
 
+      {/* BODY */}
       <div className="px-4 -mt-10 space-y-4 relative z-20">
 
         {/* alerta principal */}
@@ -126,11 +127,11 @@ export default function TriagemRiscoMOB() {
 
       </div>
 
-      {/* botão de ação */}
+      {/* FOOTER */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent z-30 pb-8">
         <button
           className="w-full bg-[var(--color-primary)] text-white font-bold text-base py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/eletrolitos')}
         >
           Registrar e Continuar
         </button>

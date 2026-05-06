@@ -1,19 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Activity, Bike, Trophy, Waves } from 'lucide-react'
-import BottomNav from '../components/BottomNav'
+import { Activity, Bike, Trophy, Waves, BarChart2 } from 'lucide-react'
+import BottomNav from '../../components/mobile/BottomNav'
 
 const filtros = ['7 dias', '30 dias', '3 meses', 'Tudo']
 
 const sessoes = [
-  { modalidade: 'Corrida', icon: Activity, data: 'Hoje, 09:14', taxa: 1.04, massa: -1.2 },
-  { modalidade: 'Ciclismo', icon: Bike, data: '28 Mar, 18:30', taxa: 1.20, massa: -2.1 },
-  { modalidade: 'Corrida', icon: Activity, data: '26 Mar, 07:00', taxa: 0.85, massa: -0.8 },
-  { modalidade: 'Futebol', icon: Trophy, data: '24 Mar, 17:00', taxa: 0.95, massa: -1.0 },
-  { modalidade: 'Natação', icon: Waves, data: '22 Mar, 08:00', taxa: 0.70, massa: -0.6 },
-  { modalidade: 'Corrida', icon: Activity, data: '20 Mar, 07:15', taxa: 1.10, massa: -1.5 },
-  { modalidade: 'Ciclismo', icon: Bike, data: '18 Mar, 17:00', taxa: 0.90, massa: -1.1 },
-  { modalidade: 'Futebol', icon: Trophy, data: '16 Mar, 16:30', taxa: 1.05, massa: -1.3 },
+  { modalidade: 'Corrida', Icon: Activity, data: 'Hoje, 09:14', taxa: 1.04, massa: -1.2 },
+  { modalidade: 'Ciclismo', Icon: Bike, data: '28 Mar, 18:30', taxa: 1.20, massa: -2.1 },
+  { modalidade: 'Corrida', Icon: Activity, data: '26 Mar, 07:00', taxa: 0.85, massa: -0.8 },
+  { modalidade: 'Futebol', Icon: Trophy, data: '24 Mar, 17:00', taxa: 0.95, massa: -1.0 },
+  { modalidade: 'Natação', Icon: Waves, data: '22 Mar, 08:00', taxa: 0.70, massa: -0.6 },
+  { modalidade: 'Corrida', Icon: Activity, data: '20 Mar, 07:15', taxa: 1.10, massa: -1.5 },
+  { modalidade: 'Ciclismo', Icon: Bike, data: '18 Mar, 17:00', taxa: 0.90, massa: -1.1 },
+  { modalidade: 'Futebol', Icon: Trophy, data: '16 Mar, 16:30', taxa: 1.05, massa: -1.3 },
 ]
 
 const dadosGrafico = [0.90, 0.85, 1.20, 0.80, 1.04, 0.88, 0.95, 1.04]
@@ -58,7 +58,7 @@ export default function Historico() {
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
             <p className="text-xs font-semibold text-[var(--color-primary)] flex items-center gap-1">
-              <BarChart2 className="w-3.5 h-3.5" /> Taxa de Sudorese (L/h)
+              <BarChart2 className="w-4 h-4" /> Taxa de Sudorese (L/h)
             </p>
             <p className="text-xs text-gray-400 mt-0.5">Últimas 8 sessões</p>
           </div>
@@ -124,14 +124,11 @@ export default function Historico() {
                 key={i}
                 className="bg-white rounded-2xl px-4 py-3.5 shadow-sm ring-1 ring-gray-100 flex items-center justify-between"
               >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-red-50 text-[var(--color-primary)]">
-                    <s.icon className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[var(--color-text)]">{s.modalidade}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{s.data}</p>
-                  </div>
+                <div>
+                  <p className="text-sm font-semibold text-[var(--color-text)] flex items-center gap-2">
+                    {s.modalidade} <s.Icon className="w-4 h-4 text-gray-400" />
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">{s.data}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-[var(--color-primary)] flex items-center gap-1.5">

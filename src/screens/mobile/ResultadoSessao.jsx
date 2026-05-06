@@ -114,7 +114,7 @@ export default function ResultadoSessao() {
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent z-30 pb-8">
         <button 
           className="w-full bg-[var(--color-primary-dark)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-black/20 hover:bg-red-900 active:scale-95 transition-all flex items-center justify-center gap-2"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/triagem-risco-mob')}
         >
           Concluir
         </button>

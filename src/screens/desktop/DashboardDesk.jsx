@@ -1,34 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  LayoutDashboard, Users, Activity, AlertTriangle,
-  FileText, Droplets, Search, Download, Bell, ChevronRight,
+  Users, Activity, AlertTriangle,
+  Droplets, ChevronRight,
   TrendingUp,
 } from 'lucide-react'
-
-function CompassLogo({ size = 28 }) {
-  return (
-    <svg viewBox="0 0 120 120" width={size} height={size}>
-      <polygon points="60,10 66,52 60,60 54,52" fill="white" />
-      <polygon points="60,110 66,68 60,60 54,68" fill="white" />
-      <polygon points="110,60 68,54 60,60 68,66" fill="white" />
-      <polygon points="10,60 52,54 60,60 52,66" fill="white" />
-      <polygon points="97,23 66,55 60,60 65,53" fill="rgba(255,255,255,0.5)" />
-      <polygon points="23,97 54,65 60,60 55,67" fill="rgba(255,255,255,0.5)" />
-      <polygon points="23,23 55,55 60,60 53,55" fill="rgba(255,255,255,0.5)" />
-      <polygon points="97,97 65,65 60,60 67,65" fill="rgba(255,255,255,0.5)" />
-    </svg>
-  )
-}
-
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard',       path: '/dashboard', active: true  },
-  { icon: Users,           label: 'Atletas',          path: null,         active: false },
-  { icon: Activity,        label: 'Sessões',          path: null,         active: false },
-  { icon: AlertTriangle,   label: 'Triagem de Risco', path: null,         active: false },
-  { icon: FileText,        label: 'Relatórios',       path: null,         active: false },
-  { icon: Droplets,        label: 'Eletrólitos',      path: null,         active: false },
-]
+import Sidebar from '../../components/desktop/Sidebar'
+import TopBar from '../../components/desktop/TopBar'
 
 const stats = [
   { label: 'Atletas Ativos',         icon: Users         },
@@ -59,87 +37,10 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-[var(--color-bg)] font-sans overflow-hidden">
+      <Sidebar />
 
-      {/* Sidebar */}
-      <aside className="w-56 bg-[#1a0a0b] flex flex-col flex-shrink-0">
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-white/10">
-          <CompassLogo size={28} />
-          <div>
-            <p className="text-white font-bold text-sm leading-tight">Nutri-Esportiva</p>
-            <p className="text-white/50 text-xs">Painel Web</p>
-          </div>
-        </div>
-
-        <div className="px-4 py-4">
-          <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
-            <Search className="w-3.5 h-3.5 text-white/50 flex-shrink-0" />
-            <input
-              placeholder="Buscar atleta"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              className="bg-transparent text-white/80 text-xs placeholder-white/40 outline-none w-full"
-            />
-          </div>
-        </div>
-
-        <nav className="flex-1 px-3 space-y-0.5">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <button
-                key={item.label}
-                onClick={() => item.path && navigate(item.path)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  item.active
-                    ? 'bg-[var(--color-primary)] text-white'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <Icon className="w-4 h-4 flex-shrink-0" />
-                <span className="flex-1 text-left">{item.label}</span>
-              </button>
-            )
-          })}
-        </nav>
-
-        {/* User */}
-        <div className="px-4 py-4 border-t border-white/10 flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            --
-          </div>
-          <div className="min-w-0">
-            <p className="text-white text-xs font-medium truncate">Usuário</p>
-            <p className="text-white/40 text-xs truncate">Perfil</p>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-
-        {/* Top bar */}
-        <header className="bg-white border-b border-gray-100 px-6 py-3.5 flex items-center gap-4 flex-shrink-0">
-          <div className="flex-1">
-            <h1 className="text-lg font-bold text-[var(--color-text)]">Dashboard</h1>
-            <p className="text-xs text-[var(--color-text-light)]">Painel Web</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <select className="text-xs border border-gray-200 rounded-lg px-3 py-2 text-[var(--color-text)] bg-white focus:outline-none">
-              <option>Últimos 7 dias</option>
-              <option>Últimos 30 dias</option>
-            </select>
-            <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
-              <Bell className="w-4 h-4 text-gray-400" />
-            </button>
-            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs font-bold">
-              --
-            </div>
-            <button className="flex items-center gap-1.5 bg-[var(--color-primary)] text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors">
-              <Download className="w-3.5 h-3.5" />
-              Exportar
-            </button>
-          </div>
-        </header>
+        <TopBar title="Dashboard" subtitle="Painel Web" />
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto p-6 space-y-5">

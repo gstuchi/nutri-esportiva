@@ -72,7 +72,7 @@ export default function Eletrolitos() {
         <div className="flex items-center gap-3 relative z-10">
           <button
             className="p-2 -ml-2 rounded-full hover:bg-white/20 transition-colors"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(-1)}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -174,7 +174,7 @@ export default function Eletrolitos() {
               ? 'bg-[var(--color-primary)] shadow-red-500/30 hover:bg-[var(--color-primary-dark)]'
               : 'bg-gray-300 shadow-none cursor-not-allowed'
           }`}
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/historico')}
         >
           Salvar Avaliação
         </button>

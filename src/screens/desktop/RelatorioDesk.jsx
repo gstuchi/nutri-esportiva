@@ -1,26 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
-  Search, 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  AlertTriangle, 
-  FileText, 
-  Bell,
-  Activity,
   BarChart2,
   FileDown,
   FileSpreadsheet,
   Medal,
   Bike,
   Trophy,
-  Waves
+  Waves,
+  Activity
 } from 'lucide-react';
+import Sidebar from '../../components/desktop/Sidebar';
+import TopBar from '../../components/desktop/TopBar';
 
-export default function Relatorio() {
-  const navigate = useNavigate();
-
+export default function RelatorioDesk() {
   const relatoriosDisponiveis = [
     { id: 1, nome: 'Avaliação de Hidratação — Equipe Completa', tipo: 'Equipe', periodo: '1–30 Mar', geradoEm: 'Hoje 08:00', status: 'Pronto' },
     { id: 2, nome: 'Triagem de Risco — João Silva', tipo: 'Individual', periodo: '1–30 Mar', geradoEm: 'Hoje 08:00', status: 'Pronto' },
@@ -39,98 +31,10 @@ export default function Relatorio() {
 
   return (
     <div className="flex h-screen bg-[#F8F9FA] font-sans overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#B91C1C] text-white flex flex-col flex-shrink-0">
-        {/* Logo */}
-        <div className="p-6 flex items-center gap-3">
-          <div className="bg-white p-1.5 rounded-full">
-            <Activity className="w-6 h-6 text-[#B91C1C]" />
-          </div>
-          <div>
-            <h1 className="font-bold text-lg leading-tight">Nutri-Esportiva</h1>
-            <p className="text-white/70 text-xs">Painel Web</p>
-          </div>
-        </div>
+      <Sidebar />
 
-        {/* Search */}
-        <div className="px-4 mb-6">
-          <div className="bg-[#991B1B] rounded-lg flex items-center px-3 py-2.5">
-            <Search className="w-4 h-4 text-white/60" />
-            <input 
-              type="text" 
-              placeholder="Buscar atleta..." 
-              className="bg-transparent border-none outline-none text-white placeholder:text-white/60 ml-2 text-sm w-full"
-            />
-          </div>
-        </div>
-
-        {/* Menu */}
-        <div className="px-4 mb-3 text-[10px] font-bold text-white/50 tracking-wider">
-          MENU
-        </div>
-        
-        <nav className="flex-1 px-2 space-y-1">
-          <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 transition-colors text-sm font-medium">
-            <LayoutDashboard className="w-5 h-5" /> Dashboard
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 transition-colors text-sm font-medium">
-            <Users className="w-5 h-5" /> Atletas
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 transition-colors text-sm font-medium">
-            <Calendar className="w-5 h-5" /> Sessões
-          </button>
-          <button onClick={() => navigate('/triagem-de-risco')} className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 transition-colors text-sm font-medium">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-5 h-5" /> Triagem de Risco
-            </div>
-            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#991B1B] text-white transition-colors text-sm font-medium relative overflow-hidden group">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r"></div>
-            <div className="flex items-center gap-3 ml-1">
-              <FileText className="w-5 h-5" /> Relatórios
-            </div>
-          </button>
-        </nav>
-
-        {/* User Profile */}
-        <div className="p-4 mt-auto">
-          <div className="bg-[#991B1B] rounded-xl p-3 flex items-center gap-3">
-            <div className="bg-[#D01F25] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-inner border border-red-400/20">
-              MR
-            </div>
-            <div className="overflow-hidden">
-              <p className="font-semibold text-sm truncate text-white">Dra. Marina R.</p>
-              <p className="text-white/60 text-xs truncate">Nutricionista</p>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-y-auto">
-        {/* Topbar */}
-        <header className="bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-             <div className="p-1.5 rounded-lg text-gray-500">
-               <BarChart2 className="w-7 h-7" />
-             </div>
-             <div>
-               <h1 className="text-xl font-bold text-gray-800 leading-tight">Relatórios</h1>
-               <p className="text-sm text-gray-500 mt-0.5">Gere e exporte relatórios da equipe</p>
-             </div>
-          </div>
-          
-          <div className="flex items-center gap-5">
-            <button className="relative p-1 text-gray-400 hover:text-gray-600 transition-colors">
-              <Bell className="w-6 h-6" />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-yellow-500 rounded-full border-2 border-white"></span>
-            </button>
-            <div className="w-10 h-10 bg-[#B91C1C] text-white rounded-full flex items-center justify-center font-bold text-sm">
-              AL
-            </div>
-          </div>
-        </header>
+        <TopBar title="Relatórios" subtitle="Gere e exporte relatórios da equipe" />
 
         <div className="p-8 max-w-[1400px] w-full space-y-6">
           
@@ -280,3 +184,5 @@ export default function Relatorio() {
     </div>
   );
 }
+
+
