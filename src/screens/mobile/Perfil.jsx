@@ -122,29 +122,6 @@ export default function Perfil() {
           )
         })}
 
-        {/* Perfil de acesso */}
-        <div className="bg-white rounded-2xl px-4 py-3 shadow-sm ring-1 ring-gray-100 flex-shrink-0">
-          <p className="text-xs text-[var(--color-text-light)] font-medium mb-2">Perfil de acesso</p>
-          <div className="flex gap-2">
-            {['Atleta', 'Nutricionista'].map((role) => {
-              const ativo = roleAtleta ? role === 'Atleta' : role === 'Nutricionista'
-              return (
-                <button
-                  key={role}
-                  onClick={() => setRoleAtleta(role === 'Atleta')}
-                  className={`flex-1 py-2 rounded-full text-sm font-semibold transition-all ${
-                    ativo
-                      ? 'bg-[var(--color-primary)] text-white shadow-md shadow-red-500/30'
-                      : 'bg-gray-50 text-gray-600 ring-1 ring-gray-200/50'
-                  }`}
-                >
-                  {role}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
         {/* Botão salvar */}
         <div className="mt-4 pb-4">
           <button className="w-full bg-[var(--color-primary)] text-white font-bold text-base py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all">

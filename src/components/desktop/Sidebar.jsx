@@ -71,7 +71,7 @@ export default function Sidebar() {
           <div className="bg-[#D01F25] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm">MR</div>
           <div>
             <p className="font-semibold text-sm text-white">Dra. Marina R.</p>
-            <p className="text-white/60 text-xs">Nutricionista</p>
+            <p className="text-white/60 text-xs">Treinador</p>
           </div>
         </div>
       </div>

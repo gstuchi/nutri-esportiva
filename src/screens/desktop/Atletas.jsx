@@ -38,7 +38,6 @@ export default function Atletas() {
               <button className="bg-white border border-gray-200 text-gray-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-gray-50">Atenção (7)</button>
               <button className="bg-white border border-gray-200 text-gray-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-gray-50">OK (14)</button>
             </div>
-            <button className="ml-auto bg-[#B91C1C] text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-[#991B1B]">Adicionar</button>
           </div>
 
           {/* tabela de atletas */}

@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, ArrowRight } from 'lucide-react'
 
-const roles = ['Nutricionista', 'Admin']
-
 function CompassLogo({ size = 32 }) {
   return (
     <svg viewBox="0 0 120 120" width={size} height={size}>
@@ -23,8 +21,9 @@ function CompassLogo({ size = 32 }) {
 
 export default function Login() {
   const navigate = useNavigate()
-  const [role, setRole]           = useState('Nutricionista')
+  const [isLogin, setIsLogin]     = useState(true)
   const [email, setEmail]         = useState('')
+  const [nome, setNome]           = useState('')
   const [senha, setSenha]         = useState('')
   const [verSenha, setVerSenha]   = useState(false)
   const [manter, setManter]       = useState(false)
@@ -67,7 +66,7 @@ export default function Login() {
       </div>
 
       {/* Painel direito — formulário */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white lg:bg-transparent">
         <div className="w-full max-w-md">
           {/* Logo mobile */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
@@ -77,28 +76,28 @@ export default function Login() {
             <span className="font-bold text-[var(--color-primary)]">Nutri-Esportiva</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-[var(--color-text)] mb-1">Entrar no painel</h2>
-          <p className="text-sm text-[var(--color-text-light)] mb-6">Acesse como nutricionista ou admin</p>
-
-          {/* Tabs de papel */}
-          <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6">
-            {roles.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRole(r)}
-                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
-                  role === r
-                    ? 'bg-white text-[var(--color-text)] shadow-sm'
-                    : 'text-[var(--color-text-light)] hover:text-[var(--color-text)]'
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
+          <h2 className="text-2xl font-bold text-[var(--color-text)] mb-1">
+            {isLogin ? 'Entrar no painel' : 'Criar sua conta'}
+          </h2>
+          <p className="text-sm text-[var(--color-text-light)] mb-8">
+            {isLogin ? 'Painel exclusivo para Treinadores e Staff' : 'Comece a monitorar sua equipe hoje'}
+          </p>
 
           {/* Campos */}
           <div className="space-y-4">
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-1.5">Nome Completo</label>
+                <input
+                  type="text"
+                  placeholder="Seu nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-[var(--color-text)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-[var(--color-primary)] transition-all"
+                />
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-[var(--color-text)] mb-1.5">E-mail</label>
               <input
@@ -129,37 +128,65 @@ export default function Login() {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-1.5">Confirmar Senha</label>
+                <input
+                  type={verSenha ? 'text' : 'password'}
+                  placeholder="••••••••••"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-[var(--color-text)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-[var(--color-primary)] transition-all"
+                />
+              </div>
+            )}
           </div>
 
           {/* Manter + esqueci */}
-          <div className="flex items-center justify-between mt-4 mb-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={manter}
-                onChange={(e) => setManter(e.target.checked)}
-                className="w-4 h-4 accent-[var(--color-primary)] rounded"
-              />
-              <span className="text-sm text-[var(--color-text-light)]">Manter conectado</span>
-            </label>
-            <button className="text-sm text-[var(--color-primary)] font-medium hover:underline">
-              Esqueci minha senha
-            </button>
-          </div>
+          {isLogin && (
+            <div className="flex items-center justify-between mt-4 mb-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={manter}
+                  onChange={(e) => setManter(e.target.checked)}
+                  className="w-4 h-4 accent-[var(--color-primary)] rounded"
+                />
+                <span className="text-sm text-[var(--color-text-light)]">Manter conectado</span>
+              </label>
+              <button className="text-sm text-[var(--color-primary)] font-medium hover:underline">
+                Esqueci minha senha
+              </button>
+            </div>
+          )}
 
-          {/* Botão entrar */}
+          {/* Botão entrar/cadastrar */}
           <button
             onClick={() => navigate('/dashboard')}
-            className="w-full bg-[var(--color-primary)] text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all text-sm"
+            className={`w-full ${isLogin ? 'bg-[var(--color-primary)]' : 'bg-gray-800'} text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-red-500/10 hover:opacity-90 active:scale-95 transition-all text-sm mt-6`}
           >
-            Entrar
+            {isLogin ? 'Entrar' : 'Cadastrar'}
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          <p className="text-center text-xs text-[var(--color-text-light)] mt-6">
-            ou entrar com
-          </p>
-          <button className="w-full mt-3 border border-gray-200 bg-white text-[var(--color-text)] text-sm font-medium py-3 rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+          <div className="mt-6 text-center">
+            <button 
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-sm text-[var(--color-text-light)]"
+            >
+              {isLogin ? (
+                <>Não tem uma conta? <span className="text-[var(--color-primary)] font-bold">Cadastre-se</span></>
+              ) : (
+                <>Já tem uma conta? <span className="text-[var(--color-primary)] font-bold">Faça login</span></>
+              )}
+            </button>
+          </div>
+
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100"></div></div>
+            <div className="relative flex justify-center text-xs uppercase"><span className="bg-white lg:bg-[var(--color-bg)] px-2 text-gray-400">ou entrar com</span></div>
+          </div>
+
+          <button className="w-full border border-gray-200 bg-white text-[var(--color-text)] text-sm font-medium py-3 rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-sm">
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
