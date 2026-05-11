@@ -48,13 +48,13 @@ export default function Splash() {
       <div className="flex flex-col gap-4 p-6 w-full max-w-md mx-auto z-10 pb-12">
         <button 
           className="w-full bg-white text-[var(--color-primary)] font-semibold py-4 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all duration-200"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/login')}
         >
           Criar Conta
         </button>
         <button 
           className="w-full bg-transparent border border-white text-white font-semibold py-4 rounded-full hover:bg-white/10 active:scale-95 transition-all duration-200"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/login')}
         >
           Já tenho conta
         </button>

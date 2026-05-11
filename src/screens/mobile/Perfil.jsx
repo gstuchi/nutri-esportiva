@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { User, Cake, Scale, Ruler, Trophy, ChevronRight, Check, X } from 'lucide-react'
+import BottomNav from '../../components/mobile/BottomNav'
 
 const modalidades = ['Corrida de Rua', 'Ciclismo', 'Futebol', 'Natação', 'Triathlon', 'Outro']
 
@@ -37,7 +38,7 @@ export default function Perfil() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[var(--color-bg)] font-sans overflow-hidden">
+    <div className="min-h-screen pb-32 bg-[var(--color-bg)] font-sans">
 
       {/* Header */}
       <div className="bg-[var(--color-primary)] text-white pt-10 pb-5 px-4 rounded-b-[30px] shadow-md relative overflow-hidden flex-shrink-0">
@@ -56,8 +57,8 @@ export default function Perfil() {
         <span className="text-xs text-[var(--color-text-light)] tracking-widest font-medium">ATL-00142</span>
       </div>
 
-      {/* Campos — ocupa o espaço restante */}
-      <div className="flex-1 flex flex-col px-4 gap-2 overflow-hidden">
+      {/* Campos */}
+      <div className="px-4 flex flex-col gap-2">
         {camposConfig.map((c) => {
           const Icon = c.icon
           const emEdicao = editando === c.key
@@ -144,14 +145,16 @@ export default function Perfil() {
           </div>
         </div>
 
-        {/* Botão salvar — empurrado para o fundo */}
-        <div className="mt-auto pb-4 flex-shrink-0">
+        {/* Botão salvar */}
+        <div className="mt-4 pb-4">
           <button className="w-full bg-[var(--color-primary)] text-white font-bold text-base py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all">
             Salvar Alterações
           </button>
         </div>
       </div>
 
+      <BottomNav />
     </div>
   )
 }
+

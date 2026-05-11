@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Scale, Droplets, ClipboardList, ChevronRight } from 'lucide-react'
+import { Scale, Droplets, ClipboardList, ChevronRight, User } from 'lucide-react'
 import BottomNav from '../../components/mobile/BottomNav'
 
 const stats = [
@@ -58,6 +58,14 @@ export default function Dashboard() {
         {/* Elemento decorativo */}
         <div className="absolute -top-24 -right-12 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
         
+        {/* Botão de Perfil - Topo Direito */}
+        <button 
+          onClick={() => navigate('/perfil')}
+          className="absolute top-10 right-6 z-20 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all active:scale-95"
+        >
+          <User className="w-5 h-5 text-white" />
+        </button>
+
         <div className="relative z-10 flex items-center gap-2 mb-1">
           <h1 className="text-3xl font-bold tracking-tight">Olá, João</h1>
           <span className="text-2xl animate-bounce">👋</span>

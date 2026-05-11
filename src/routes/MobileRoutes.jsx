@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Import mobile and shared screens
 import Splash from '../screens/mobile/Splash';
@@ -12,22 +12,38 @@ import Historico from '../screens/mobile/Historico';
 import TriagemRisco from '../screens/mobile/TriagemRisco';
 import Eletrolitos from '../screens/mobile/Eletrolitos';
 import Perfil from '../screens/mobile/Perfil';
+import LoginCadastro from '../screens/mobile/LoginCadastro';
+import Grupo from '../screens/mobile/Grupo';
+
+// Simple Route Guard
+const PrivateRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
 
 export default function MobileRoutes() {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+
   return (
     <Routes>
-      <Route path="/" element={<Splash />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/pre-sessao" element={<PreSessao />} />
-      <Route path="/durante-sessao" element={<DuranteSessao />} />
-      <Route path="/pos-sessao" element={<PosSessao />} />
-      <Route path="/resultado-sessao" element={<ResultadoSessao />} />
-      <Route path="/relatorios" element={<Relatorio />} />
-      <Route path="/historico" element={<Historico />} />
-      <Route path="/triagem-risco-mob" element={<TriagemRisco />} />
-      <Route path="/eletrolitos" element={<Eletrolitos />} />
-      <Route path="/perfil" element={<Perfil />} />
+      <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Splash />} />
+      <Route path="/login" element={<LoginCadastro />} />
+      
+      {/* Private Routes */}
+      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+      <Route path="/pre-sessao" element={<PrivateRoute><PreSessao /></PrivateRoute>} />
+      <Route path="/durante-sessao" element={<PrivateRoute><DuranteSessao /></PrivateRoute>} />
+      <Route path="/pos-sessao" element={<PrivateRoute><PosSessao /></PrivateRoute>} />
+      <Route path="/resultado-sessao" element={<PrivateRoute><ResultadoSessao /></PrivateRoute>} />
+      <Route path="/relatorio" element={<PrivateRoute><Relatorio /></PrivateRoute>} />
+      <Route path="/historico" element={<PrivateRoute><Historico /></PrivateRoute>} />
+      <Route path="/triagem-risco-mob" element={<PrivateRoute><TriagemRisco /></PrivateRoute>} />
+      <Route path="/eletrolitos" element={<PrivateRoute><Eletrolitos /></PrivateRoute>} />
+      <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
+      <Route path="/grupo" element={<PrivateRoute><Grupo /></PrivateRoute>} />
     </Routes>
   );
 }
+
+
 
