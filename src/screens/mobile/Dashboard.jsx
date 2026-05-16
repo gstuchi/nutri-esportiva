@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Scale, Droplets, ClipboardList, ChevronRight, User } from 'lucide-react'
 import BottomNav from '../../components/mobile/BottomNav'
+import { useAuthStore } from '../../store/authStore'
 
 const stats = [
   { value: '0.9 L/h', label: 'Taxa Média' },
@@ -50,6 +51,9 @@ const fluxo = [
 export default function Dashboard() {
   const navigate = useNavigate()
 
+  const { user } = useAuthStore();
+  const userName = user?.name?.split(' ')[0] || 'Atleta';
+
   return (
     <div className="min-h-screen pb-24 bg-[var(--color-bg)] font-sans">
       
@@ -67,7 +71,7 @@ export default function Dashboard() {
         </button>
 
         <div className="relative z-10 flex items-center gap-2 mb-1">
-          <h1 className="text-3xl font-bold tracking-tight">Olá, João</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Olá, {userName}</h1>
           <span className="text-2xl animate-bounce">👋</span>
         </div>
         <p className="text-white/90 text-sm font-medium">Pronto para registrar a sessão de hoje?</p>

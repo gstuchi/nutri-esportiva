@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { useAuthStore } from '../../../store/authStore';
 
 export default function LoginCadastro() {
   const navigate = useNavigate();
@@ -13,12 +14,27 @@ export default function LoginCadastro() {
   const [name, setName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const { login, register, isLoading, error } = useAuthStore();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock authentication
-    localStorage.setItem('isAuthenticated', 'true');
-    // TODO: integrar com API de autenticação
-    navigate('/dashboard');
+    if (!isLogin && password !== confirmPassword) {
+      alert('As senhas não coincidem!');
+      return;
+    }
+
+    try {
+      if (isLogin) {
+        await login(email, password);
+      } else {
+        await register(name, email, password, 'athlete');
+        // Auto-login após cadastro
+        await login(email, password);
+      }
+      navigate('/dashboard');
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

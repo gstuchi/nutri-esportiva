@@ -1,8 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import { FileText, History, Droplet, ArrowDown, ClipboardList, CheckCircle2, AlertTriangle, Info } from 'lucide-react'
+import { useSessionStore } from '../../store/sessionStore'
 
 export default function ResultadoSessao() {
   const navigate = useNavigate()
+  const { sessionResults } = useSessionStore()
+
+  // Use fallback data if sessionResults is missing (e.g. direct navigation or API down)
+  const sweatRate = sessionResults?.sweat_rate_ml_per_h?.toFixed(2) || '1.04';
+  const dehydrationPct = sessionResults?.dehydration_pct?.toFixed(1) || '1.2';
+  const duration = sessionResults?.duration_minutes || 48;
+  const rehydrationTarget = sessionResults?.rehydration_target_ml || 1400;
 
   return (
     <div className="min-h-screen pb-32 bg-[var(--color-bg)] font-sans relative">
@@ -27,7 +35,7 @@ export default function ResultadoSessao() {
           
           <h2 className="text-white/80 text-sm font-semibold mb-2 relative z-10">Taxa de Sudorese</h2>
           <div className="flex items-end justify-center gap-1 mb-2 relative z-10">
-            <span className="text-6xl font-black tracking-tighter">1.04</span>
+            <span className="text-6xl font-black tracking-tighter">{sweatRate}</span>
             <span className="text-xl font-bold text-white/80 pb-1">L/h</span>
           </div>
           <div className="inline-block bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm relative z-10 border border-white/10">
@@ -38,15 +46,15 @@ export default function ResultadoSessao() {
         {/* 3 Metrics Row */}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100 flex justify-between divide-x divide-gray-100 text-center">
           <div className="flex-1 px-2">
-            <p className="text-orange-500 font-bold text-lg">-1.2%</p>
+            <p className="text-orange-500 font-bold text-lg">{dehydrationPct}%</p>
             <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mt-1">Perda de Massa</p>
           </div>
           <div className="flex-1 px-2">
-            <p className="text-[var(--color-primary)] font-bold text-lg">850 mL</p>
+            <p className="text-[var(--color-primary)] font-bold text-lg">{sessionResults?.post?.post_session_fluid_ml || 850} mL</p>
             <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mt-1">Ingestão Total</p>
           </div>
           <div className="flex-1 px-2">
-            <p className="text-gray-800 font-bold text-lg">48 min</p>
+            <p className="text-gray-800 font-bold text-lg">{duration} min</p>
             <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mt-1">Duração</p>
           </div>
         </div>
@@ -62,20 +70,24 @@ export default function ResultadoSessao() {
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
-              <span className="text-gray-600 text-sm font-medium">Beba 250–300 mL a cada 15 minutos</span>
+              <span className="text-gray-600 text-sm font-medium">Beba 250–300 mL a cada 15 minutos na próxima sessão</span>
             </li>
-            <li className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
-              <span className="text-gray-600 text-sm font-medium">Perda {'>'} 2%? Monitore de perto</span>
-            </li>
+            {sessionResults?.risk_level === 'high' || sessionResults?.risk_level === 'critical' ? (
+              <li className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
+                <span className="text-gray-600 text-sm font-medium text-red-600 font-bold">Risco alto! Hidrate-se imediatamente.</span>
+              </li>
+            ) : null}
             <li className="flex items-start gap-3">
               <Droplet className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-              <span className="text-gray-600 text-sm font-medium">Reidrate com 1.4 L nas próximas 2h</span>
+              <span className="text-gray-600 text-sm font-medium">Reidrate com {(rehydrationTarget / 1000).toFixed(1)} L nas próximas 2h</span>
             </li>
-            <li className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-              <span className="text-gray-600 text-sm font-medium">Considere bebida esportiva</span>
-            </li>
+            {sessionResults?.electrolyte_risk === 'high' ? (
+              <li className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+                <span className="text-gray-600 text-sm font-medium">Considere bebida esportiva (Eletrólitos necessários)</span>
+              </li>
+            ) : null}
           </ul>
         </div>
 
@@ -89,11 +101,11 @@ export default function ResultadoSessao() {
           </div>
           
           <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden flex">
-            <div className="h-full bg-green-400 w-1/3" />
-            <div className="h-full bg-[#F5E84A] w-1/3" />
-            <div className="h-full bg-transparent w-1/3" />
+            <div className={`h-full w-1/3 ${sessionResults?.dehydration_score >= 80 ? 'bg-green-400' : 'bg-transparent'}`} />
+            <div className={`h-full w-1/3 ${sessionResults?.dehydration_score >= 40 && sessionResults?.dehydration_score < 80 ? 'bg-[#F5E84A]' : 'bg-transparent'}`} />
+            <div className={`h-full w-1/3 ${sessionResults?.dehydration_score < 40 ? 'bg-red-500' : 'bg-transparent'}`} />
           </div>
-          <p className="text-yellow-600 text-xs font-semibold mt-2">Levemente desidratado (1.2%)</p>
+          <p className="text-yellow-600 text-xs font-semibold mt-2">Score: {sessionResults?.dehydration_score?.toFixed(0) || 'N/A'}</p>
         </div>
 
         {/* Ações Extra */}

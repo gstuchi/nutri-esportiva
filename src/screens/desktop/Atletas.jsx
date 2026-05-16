@@ -8,6 +8,8 @@ import {
 import Sidebar from '../../components/desktop/Sidebar'
 import TopBar from '../../components/desktop/TopBar'
 
+import { useGroupStore } from '../../store/groupStore'
+
 // Mock Data Structure
 const initialGroups = [
   {
@@ -46,8 +48,10 @@ const statusConfig = {
 
 export default function Atletas() {
   const navigate = useNavigate()
+  const { createGroup, groups: apiGroups, fetchCoachGroups } = useGroupStore()
+  
   const [searchTerm, setSearchTerm] = useState('')
-  const [groups, setGroups] = useState(initialGroups)
+  const [groups, setGroups] = useState(initialGroups) // Fallback to mock data visually
   const [expandedGroups, setExpandedGroups] = useState(initialGroups.map(g => g.id))
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
@@ -71,19 +75,38 @@ export default function Atletas() {
     setIsModalOpen(true)
   }
 
-  const handleAddGroup = () => {
+  const handleAddGroup = async () => {
     if (!newGroupName.trim()) return
-    const newGroup = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: newGroupName,
-      code: newGroupCode,
-      athletes: []
+    
+    try {
+      // Integrando com POST /groups
+      const newApiGroup = await createGroup(newGroupName, 'Grupo criado no Dashboard');
+      
+      const newGroup = {
+        id: newApiGroup?.id || Math.random().toString(36).substr(2, 9),
+        name: newGroupName,
+        code: newApiGroup?.code || newGroupCode,
+        athletes: []
+      }
+      
+      setGroups([newGroup, ...groups])
+      setExpandedGroups([...expandedGroups, newGroup.id])
+      setNewGroupName('')
+      setIsModalOpen(false)
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao criar grupo via API, usando fallback local.');
+      const newGroup = {
+        id: Math.random().toString(36).substr(2, 9),
+        name: newGroupName,
+        code: newGroupCode,
+        athletes: []
+      }
+      setGroups([newGroup, ...groups])
+      setExpandedGroups([...expandedGroups, newGroup.id])
+      setNewGroupName('')
+      setIsModalOpen(false)
     }
-    // TODO: integrar com POST /groups
-    setGroups([newGroup, ...groups])
-    setExpandedGroups([...expandedGroups, newGroup.id])
-    setNewGroupName('')
-    setIsModalOpen(false)
   }
 
   const getFilteredGroups = () => {

@@ -1,15 +1,55 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Weight, Stethoscope, Activity, ChevronRight } from 'lucide-react'
+import { useSessionStore } from '../../store/sessionStore'
 
 const sintomasOpcoes = ['Fadiga', 'Cãibras', 'Tontura', 'Sede intensa', 'Náusea', 'Nenhum']
 const tolerancias = ['Ótima', 'Boa', 'Regular', 'Ruim']
 
+const mapTolerancia = {
+  'Ótima': 'good',
+  'Boa': 'good',
+  'Regular': 'partial',
+  'Ruim': 'poor'
+}
+
+const mapSintomas = {
+  'Fadiga': 'none', // Not an exact match, mapping to none or dropping
+  'Cãibras': 'cramps',
+  'Tontura': 'dizziness',
+  'Sede intensa': 'none',
+  'Náusea': 'nausea',
+  'Nenhum': 'none'
+}
+
 export default function PosSessao() {
   const navigate = useNavigate()
+  const { currentSession, finishSession, isLoading } = useSessionStore()
+  
   const [massaPos, setMassaPos] = useState('')
   const [sintomasSelecionados, setSintomasSelecionados] = useState([])
   const [toleranciaSel, setToleranciaSel] = useState('Boa')
+
+  const handleFinishSession = async () => {
+    try {
+      const mappedSymptoms = sintomasSelecionados
+        .map(s => mapSintomas[s])
+        .filter(s => s !== 'none' && s !== undefined);
+
+      if (currentSession?.id) {
+        await finishSession(currentSession.id, {
+          body_weight_post_kg: parseFloat(massaPos),
+          hydration_plan_tolerance: mapTolerancia[toleranciaSel],
+          symptoms: mappedSymptoms,
+          post_session_fluid_ml: 0 // Defaulting if not captured in UI
+        });
+      }
+      navigate('/resultado-sessao');
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao finalizar sessão');
+    }
+  }
 
   const toggleSintoma = (sintoma) => {
     if (sintoma === 'Nenhum') {
@@ -125,11 +165,12 @@ export default function PosSessao() {
       {/* Footer / Botão de Ação */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent z-20 pb-8">
         <button 
-          className="w-full bg-[var(--color-primary)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all flex items-center justify-center gap-2"
-          onClick={() => navigate('/resultado-sessao')}
+          className="w-full bg-[var(--color-primary)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          onClick={handleFinishSession}
+          disabled={isLoading || !massaPos}
         >
-          Calcular Taxa de Sudorese
-          <ChevronRight className="w-5 h-5" />
+          {isLoading ? 'Calculando...' : 'Calcular Taxa de Sudorese'}
+          {!isLoading && <ChevronRight className="w-5 h-5" />}
         </button>
       </div>
     </div>

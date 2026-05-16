@@ -13,11 +13,33 @@ const urineColors = [
 
 const modalidades = ['Corrida', 'Ciclismo', 'Futebol', 'Natação', 'Outro']
 
+import { useSessionStore } from '../../store/sessionStore'
+
 export default function PreSessao() {
   const navigate = useNavigate()
+  const { startSession, isLoading } = useSessionStore()
+  
   const [massa, setMassa] = useState('')
   const [urineSel, setUrineSel] = useState(null)
   const [modalidade, setModalidade] = useState('Corrida')
+
+  const handleStartSession = async () => {
+    try {
+      await startSession({
+        sport_modality: modalidade,
+        body_weight_kg: parseFloat(massa),
+        urine_color: urineSel,
+        temperature_celsius: 28.5,
+        humidity_percent: 65,
+        solar_exposure: 'full',
+        // Outros campos opcionais
+      });
+      navigate('/durante-sessao');
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao iniciar sessão');
+    }
+  }
 
   return (
     <div className="min-h-screen pb-32 bg-[var(--color-bg)] font-sans relative">
@@ -159,10 +181,11 @@ export default function PreSessao() {
       {/* Footer / Botão de Ação */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent z-20 pb-8">
         <button 
-          className="w-full bg-[var(--color-primary)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all flex items-center justify-center gap-2"
-          onClick={() => navigate('/durante-sessao')}
+          className="w-full bg-[var(--color-primary)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          onClick={handleStartSession}
+          disabled={isLoading || !massa || !urineSel}
         >
-          Iniciar Sessão
+          {isLoading ? 'Iniciando...' : 'Iniciar Sessão'}
         </button>
       </div>
     </div>
