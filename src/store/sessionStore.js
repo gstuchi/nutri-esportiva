@@ -4,6 +4,7 @@ import { api } from '../services/api';
 export const useSessionStore = create((set) => ({
   currentSession: null,
   sessionResults: null,
+  athleteHistory: [],
   isLoading: false,
   error: null,
 
@@ -53,6 +54,30 @@ export const useSessionStore = create((set) => ({
       throw error;
     }
   },
+
+  fetchAthleteHistory: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.get('/sessions/history');
+      set({ athleteHistory: response.data, isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({ error: error.response?.data?.error || 'Erro ao buscar histórico', isLoading: false });
+      throw error;
+    }
+  },
+
+  fetchActiveSession: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.get('/sessions/active');
+      set({ currentSession: response.data || null, isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({ error: error.response?.data?.error || 'Erro ao buscar sessão ativa', isLoading: false });
+      throw error;
+    }
+  },
   
-  clearSession: () => set({ currentSession: null, sessionResults: null, error: null })
+  clearSession: () => set({ currentSession: null, sessionResults: null, athleteHistory: [], error: null })
 }));

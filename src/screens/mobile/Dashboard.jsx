@@ -1,58 +1,93 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Scale, Droplets, ClipboardList, ChevronRight, User } from 'lucide-react'
 import BottomNav from '../../components/mobile/BottomNav'
 import { useAuthStore } from '../../store/authStore'
-
-const stats = [
-  { value: '0.9 L/h', label: 'Taxa Média' },
-  { value: '2 dias', label: 'Última sessão' },
-  { value: '-1.2%', label: 'Desidratação' },
-]
-
-const fluxo = [
-  {
-    id: 1,
-    title: 'Pré-Sessão',
-    sub: 'Pesagem + condições ambientais',
-    badge: 'FAZER',
-    path: '/pre-sessao',
-    icon: Scale,
-    active: true
-  },
-  {
-    id: 2,
-    title: 'Durante a Sessão',
-    sub: 'Registro de fluidos em tempo real',
-    badge: null,
-    path: null,
-    icon: Droplets,
-    active: false
-  },
-  {
-    id: 3,
-    title: 'Pós-Sessão',
-    sub: 'Pesagem final + sintomas',
-    badge: null,
-    path: null,
-    icon: Scale,
-    active: false
-  },
-  {
-    id: 4,
-    title: 'Relatório',
-    sub: 'Taxa de sudorese + recomendações',
-    badge: null,
-    path: null,
-    icon: ClipboardList,
-    active: false
-  },
-]
+import { useSessionStore } from '../../store/sessionStore'
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const userName = user?.name?.split(' ')[0] || 'Atleta'
 
-  const { user } = useAuthStore();
-  const userName = user?.name?.split(' ')[0] || 'Atleta';
+  const { 
+    athleteHistory, 
+    currentSession, 
+    fetchAthleteHistory, 
+    fetchActiveSession 
+  } = useSessionStore()
+
+  useEffect(() => {
+    fetchAthleteHistory()
+    fetchActiveSession()
+  }, [])
+
+  // Cálculos dinâmicos a partir do histórico de sessões completadas
+  const completedSessions = athleteHistory || []
+  const totalSweatRate = completedSessions.reduce((acc, s) => acc + (s.sweat_rate_ml_per_h || 0), 0)
+  const avgSweatRate = completedSessions.length > 0 ? (totalSweatRate / completedSessions.length) : 0
+  const avgSweatRateText = avgSweatRate > 0 ? `${(avgSweatRate / 1000).toFixed(1)} L/h` : '0.0 L/h'
+
+  let lastSessionText = 'Sem treinos'
+  if (completedSessions.length > 0) {
+    const lastSessionDate = new Date(completedSessions[0].session_date)
+    const diffTime = Math.abs(new Date() - lastSessionDate)
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    lastSessionText = diffDays === 1 ? '1 dia atrás' : `${diffDays} dias atrás`
+  }
+
+  let lastDehydrationText = '0.0%'
+  if (completedSessions.length > 0) {
+    const pct = completedSessions[0].dehydration_pct || 0
+    lastDehydrationText = `-${pct.toFixed(1)}%`
+  }
+
+  const dynamicStats = [
+    { value: avgSweatRateText, label: 'Taxa Média' },
+    { value: lastSessionText, label: 'Última sessão' },
+    { value: lastDehydrationText, label: 'Desidratação' },
+  ]
+
+  const hasActive = !!currentSession
+
+  const dynamicFluxo = [
+    {
+      id: 1,
+      title: 'Pré-Sessão',
+      sub: 'Pesagem + condições ambientais',
+      badge: hasActive ? 'CONCLUÍDO' : 'FAZER',
+      path: hasActive ? null : '/pre-sessao',
+      icon: Scale,
+      active: !hasActive
+    },
+    {
+      id: 2,
+      title: 'Durante a Sessão',
+      sub: 'Registro de fluidos em tempo real',
+      badge: hasActive ? 'EM ANDAMENTO' : null,
+      path: hasActive ? '/durante-sessao' : null,
+      icon: Droplets,
+      active: hasActive
+    },
+    {
+      id: 3,
+      title: 'Pós-Sessão',
+      sub: 'Pesagem final + sintomas',
+      badge: hasActive ? 'PENDENTE' : null,
+      path: hasActive ? '/pos-sessao' : null,
+      icon: Scale,
+      active: hasActive
+    },
+    {
+      id: 4,
+      title: 'Relatório',
+      sub: 'Taxa de sudorese + recomendações',
+      badge: null,
+      path: completedSessions.length > 0 ? '/relatorio' : null,
+      icon: ClipboardList,
+      active: completedSessions.length > 0
+    },
+  ]
 
   return (
     <div className="min-h-screen pb-24 bg-[var(--color-bg)] font-sans">
@@ -74,16 +109,18 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight">Olá, {userName}</h1>
           <span className="text-2xl animate-bounce">👋</span>
         </div>
-        <p className="text-white/90 text-sm font-medium">Pronto para registrar a sessão de hoje?</p>
+        <p className="text-white/90 text-sm font-medium">
+          {hasActive ? 'Você tem uma sessão em andamento!' : 'Pronto para registrar a sessão de hoje?'}
+        </p>
       </div>
 
       {/* Stats Card flutuante */}
       <div className="px-6 -mt-12 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-5 flex justify-between items-center ring-1 ring-gray-100 backdrop-blur-xl">
-          {stats.map((s, i) => (
-            <div key={s.label} className={`flex flex-col items-center flex-1 ${i !== stats.length - 1 ? 'border-r border-gray-100' : ''}`}>
-              <span className="text-gray-800 font-bold text-lg">{s.value}</span>
-              <span className="text-gray-400 text-xs mt-0.5">{s.label}</span>
+          {dynamicStats.map((s, i) => (
+            <div key={s.label} className={`flex flex-col items-center flex-1 ${i !== dynamicStats.length - 1 ? 'border-r border-gray-100' : ''}`}>
+              <span className="text-gray-800 font-bold text-base">{s.value}</span>
+              <span className="text-gray-400 text-[10px] mt-0.5 font-semibold uppercase tracking-wider">{s.label}</span>
             </div>
           ))}
         </div>
@@ -94,10 +131,10 @@ export default function Dashboard() {
         <h2 className="text-gray-800 font-bold text-lg mb-4">Fluxo da Sessão</h2>
 
         <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
-          {fluxo.map((item, i) => (
+          {dynamicFluxo.map((item, i) => (
             <div key={item.id} className="relative">
               <button
-                className={`w-full text-left p-4 flex items-center gap-4 transition-colors ${item.active ? 'hover:bg-gray-50' : 'opacity-60 cursor-not-allowed'}`}
+                className={`w-full text-left p-4 flex items-center gap-4 transition-colors ${item.active ? 'hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'}`}
                 onClick={() => item.path && navigate(item.path)}
                 disabled={!item.active}
               >
@@ -111,7 +148,7 @@ export default function Dashboard() {
                       {item.title}
                     </span>
                     {item.badge && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-[var(--color-primary)]">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${item.badge === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-[var(--color-primary)]'}`}>
                         {item.badge}
                       </span>
                     )}
@@ -123,7 +160,7 @@ export default function Dashboard() {
                   <ChevronRight className="w-5 h-5" />
                 </div>
               </button>
-              {i < fluxo.length - 1 && <div className="h-[1px] bg-gray-100 ml-16" />}
+              {i < dynamicFluxo.length - 1 && <div className="h-[1px] bg-gray-100 ml-16" />}
             </div>
           ))}
         </div>

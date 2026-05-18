@@ -22,6 +22,7 @@ export default function PreSessao() {
   const [massa, setMassa] = useState('')
   const [urineSel, setUrineSel] = useState(null)
   const [modalidade, setModalidade] = useState('Corrida')
+  const [preSessionFluidMl, setPreSessionFluidMl] = useState('')
 
   const handleStartSession = async () => {
     try {
@@ -32,7 +33,8 @@ export default function PreSessao() {
         temperature_celsius: 28.5,
         humidity_percent: 65,
         solar_exposure: 'full',
-        // Outros campos opcionais
+        pre_session_fluid_ml: preSessionFluidMl ? parseInt(preSessionFluidMl) : null,
+        pre_session_urine_color: urineSel
       });
       navigate('/durante-sessao');
     } catch (err) {
@@ -87,6 +89,25 @@ export default function PreSessao() {
               className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-[var(--color-primary)] transition-all font-medium"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">kg</span>
+          </div>
+        </div>
+
+        {/* Card: Hidratação Pré-Exercício */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
+          <div className="mb-4">
+            <h2 className="text-gray-800 font-bold">Líquido Ingerido nas últimas 2h-4h</h2>
+            <p className="text-gray-400 text-xs mt-1">Total acumulado antes do início do treino (literatura recomenda 500-700ml)</p>
+          </div>
+          <div className="relative">
+            <input
+              type="number"
+              inputMode="numeric"
+              placeholder="Ex: 500"
+              value={preSessionFluidMl}
+              onChange={(e) => setPreSessionFluidMl(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-[var(--color-primary)] transition-all font-medium"
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">ml</span>
           </div>
         </div>
 

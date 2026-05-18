@@ -3,7 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { Weight, Stethoscope, Activity, ChevronRight } from 'lucide-react'
 import { useSessionStore } from '../../store/sessionStore'
 
-const sintomasOpcoes = ['Fadiga', 'Cãibras', 'Tontura', 'Sede intensa', 'Náusea', 'Nenhum']
+const sintomasOpcoes = [
+  'Cãibras', 
+  'Tontura', 
+  'Náusea', 
+  'Vômito', 
+  'Cefaleia / Dor de Cabeça', 
+  'Dor Gastrointestinal', 
+  'Visão Turva', 
+  'Desmaio', 
+  'Nenhum'
+]
 const tolerancias = ['Ótima', 'Boa', 'Regular', 'Ruim']
 
 const mapTolerancia = {
@@ -14,11 +24,14 @@ const mapTolerancia = {
 }
 
 const mapSintomas = {
-  'Fadiga': 'none', // Not an exact match, mapping to none or dropping
   'Cãibras': 'cramps',
   'Tontura': 'dizziness',
-  'Sede intensa': 'none',
   'Náusea': 'nausea',
+  'Vômito': 'vomiting',
+  'Cefaleia / Dor de Cabeça': 'headache',
+  'Dor Gastrointestinal': 'gi_pain',
+  'Visão Turva': 'blurred_vision',
+  'Desmaio': 'fainting',
   'Nenhum': 'none'
 }
 
@@ -29,6 +42,7 @@ export default function PosSessao() {
   const [massaPos, setMassaPos] = useState('')
   const [sintomasSelecionados, setSintomasSelecionados] = useState([])
   const [toleranciaSel, setToleranciaSel] = useState('Boa')
+  const [postSessionFluidMl, setPostSessionFluidMl] = useState('')
 
   const handleFinishSession = async () => {
     try {
@@ -41,7 +55,7 @@ export default function PosSessao() {
           body_weight_post_kg: parseFloat(massaPos),
           hydration_plan_tolerance: mapTolerancia[toleranciaSel],
           symptoms: mappedSymptoms,
-          post_session_fluid_ml: 0 // Defaulting if not captured in UI
+          post_session_fluid_ml: postSessionFluidMl ? parseInt(postSessionFluidMl) : 0
         });
       }
       navigate('/resultado-sessao');
@@ -157,6 +171,28 @@ export default function PosSessao() {
                 {t}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Card: Reidratação Pós-Exercício (Líquido pós-treino) */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
+          <div className="mb-4">
+            <h2 className="text-[var(--color-primary-dark)] font-bold flex items-center gap-2">
+              <Activity className="w-5 h-5 text-gray-400" />
+              Líquido Ingerido no Pós-Exercício (Opcional)
+            </h2>
+            <p className="text-gray-400 text-xs mt-1 ml-7">Fluido consumido imediatamente após o término do treino</p>
+          </div>
+          <div className="relative ml-7">
+            <input
+              type="number"
+              inputMode="numeric"
+              placeholder="Ex: 500"
+              value={postSessionFluidMl}
+              onChange={(e) => setPostSessionFluidMl(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-[var(--color-primary)] transition-all font-medium"
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">ml</span>
           </div>
         </div>
 

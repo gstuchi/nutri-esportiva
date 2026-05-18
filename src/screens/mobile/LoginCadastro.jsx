@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { useAuthStore } from '../../../store/authStore';
+import { useAuthStore } from '../../store/authStore';
 
 export default function LoginCadastro() {
   const navigate = useNavigate();

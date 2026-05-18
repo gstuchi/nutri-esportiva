@@ -8,14 +8,15 @@ export default function DuranteSessao() {
   const { currentSession, updateDuring, isLoading } = useSessionStore()
   const [segundos, setSegundos] = useState(0)
   const [ingestaoTotal, setIngestaoTotal] = useState(0)
-  const [rpe, setRpe] = useState(5) // Default placeholder for RPE (0-10)
+  const [rpe, setRpe] = useState(5)
+  const [fluidType, setFluidType] = useState('water')
 
   const handleEndSession = async () => {
     try {
       if (currentSession?.id) {
         await updateDuring(currentSession.id, {
           water_ingested_ml: ingestaoTotal,
-          fluid_type: 'water', // placeholder
+          fluid_type: fluidType,
           perceived_exertion_rpe: rpe
         });
       }
@@ -105,6 +106,58 @@ export default function DuranteSessao() {
           <div className="mt-8 pt-4 border-t border-gray-100 flex items-center justify-between">
             <span className="text-gray-500 text-sm font-semibold">Total ingerido até agora:</span>
             <span className="text-[var(--color-primary)] font-black text-xl">{ingestaoTotal} mL</span>
+          </div>
+        </div>
+
+        {/* Card: Tipo de Bebida */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
+          <div className="mb-4">
+            <h2 className="text-gray-800 font-bold">Tipo de Bebida Consumida</h2>
+            <p className="text-gray-400 text-xs mt-1">Selecione o tipo de líquido que está ingerindo</p>
+          </div>
+          <div className="flex gap-2">
+            {[
+              { id: 'water', label: 'Água' },
+              { id: 'isotonic', label: 'Isotônico' },
+              { id: 'hypertonic', label: 'Hipertônico' },
+              { id: 'other', label: 'Outro' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setFluidType(f.id)}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                  fluidType === f.id
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 ring-1 ring-gray-200/50'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Card: Percepção de Esforço (Escala de Borg) */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
+          <div className="mb-4">
+            <h2 className="text-gray-800 font-bold">Percepção de Esforço (Borg)</h2>
+            <p className="text-gray-400 text-xs mt-1">Como você classifica o esforço do treino até agora? ({rpe}/10)</p>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="10"
+            step="1"
+            value={rpe}
+            onChange={(e) => setRpe(parseInt(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-500"
+          />
+          <div className="flex justify-between text-[10px] text-gray-400 font-semibold mt-2">
+            <span>0 - Repouso</span>
+            <span>5 - Moderado</span>
+            <span>8 - Intenso</span>
+            <span>10 - Limite</span>
           </div>
         </div>
 

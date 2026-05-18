@@ -14,6 +14,7 @@ export const useAuthStore = create((set) => ({
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
+      localStorage.setItem('isAuthenticated', 'true');
       
       set({ 
         user, 
@@ -49,6 +50,7 @@ export const useAuthStore = create((set) => ({
 
   logout: () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('isAuthenticated');
     set({ user: null, isAuthenticated: false });
   },
 
