@@ -1,49 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
   Search, ChevronRight, Activity, Bike, Waves, Trophy, Zap, 
   ChevronDown, Plus, Users, X, AlertTriangle, CheckCircle2, 
-  Info
+  Info, Loader2
 } from 'lucide-react'
 import Sidebar from '../../components/desktop/Sidebar'
 import TopBar from '../../components/desktop/TopBar'
-
 import { useGroupStore } from '../../store/groupStore'
-
-// Mock Data Structure
-const initialGroups = [
-  {
-    id: '1',
-    name: 'Equipe Corrida A',
-    code: 'CORR-2024',
-    athletes: [
-      { inicial: 'J', cor: 'bg-blue-500', nome: 'João Silva', modality: 'Corrida', Icone: Activity, lastSession: 'Hoje 09:14', sweatRate: '1.04 L/h', loss: '-1.2%', status: 'attention' },
-      { inicial: 'A', cor: 'bg-teal-500', nome: 'Ana Ferreira', modality: 'Corrida', Icone: Activity, lastSession: '23 Mar', sweatRate: '1.35 L/h', loss: '-2.8%', status: 'risk' },
-    ]
-  },
-  {
-    id: '2',
-    name: 'Equipe Ciclismo',
-    code: 'BIKE-X',
-    athletes: [
-      { inicial: 'M', cor: 'bg-emerald-500', nome: 'Marcos Souza', modality: 'Ciclismo', Icone: Bike, lastSession: 'Ontem 18:30', sweatRate: '1.20 L/h', loss: '-2.1%', status: 'risk' },
-      { inicial: 'B', cor: 'bg-violet-500', nome: 'Beatriz Rocha', modality: 'Ciclismo', Icone: Bike, lastSession: '21 Mar', sweatRate: '0.78 L/h', loss: '-0.6%', status: 'ok' },
-    ]
-  },
-  {
-    id: '3',
-    name: 'Sem Grupo',
-    code: 'GERAL-00',
-    athletes: [
-      { inicial: 'C', cor: 'bg-amber-500', nome: 'Carla Mendes', modality: 'Natação', Icone: Waves, lastSession: 'Ontem 07:00', sweatRate: '0.85 L/h', loss: '-0.8%', status: 'ok' },
-    ]
-  }
-]
+import { api } from '../../services/api'
 
 const statusConfig = {
   risk: { label: 'Risco', color: 'bg-red-50 text-red-600', icon: AlertTriangle },
   attention: { label: 'Atenção', color: 'bg-amber-50 text-amber-600', icon: Info },
-  ok: { label: 'OK', color: 'bg-emerald-50 text-emerald-600', icon: CheckCircle2 },
+  ok: { label: 'Saudável', color: 'bg-emerald-50 text-emerald-600', icon: CheckCircle2 },
 }
 
 export default function Atletas() {
@@ -51,11 +21,46 @@ export default function Atletas() {
   const { createGroup, groups: apiGroups, fetchCoachGroups } = useGroupStore()
   
   const [searchTerm, setSearchTerm] = useState('')
-  const [groups, setGroups] = useState(initialGroups) // Fallback to mock data visually
-  const [expandedGroups, setExpandedGroups] = useState(initialGroups.map(g => g.id))
+  const [groupAthletesMap, setGroupAthletesMap] = useState({})
+  const [expandedGroups, setExpandedGroups] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
   const [newGroupCode, setNewGroupCode] = useState('')
+  const [isLoadingAll, setIsLoadingAll] = useState(false)
+
+  // 1. Carregar grupos do Coach no Mount
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoadingAll(true)
+      await fetchCoachGroups()
+      setIsLoadingAll(false)
+    }
+    loadData()
+  }, [])
+
+  // 2. Pré-carregar os atletas de todos os grupos em paralelo para busca e contadores imediatos
+  useEffect(() => {
+    const loadAthletes = async () => {
+      const promises = apiGroups.map(async (g) => {
+        if (!groupAthletesMap[g.id]) {
+          try {
+            const res = await api.get(`/groups/${g.id}/athletes`)
+            setGroupAthletesMap(prev => ({ ...prev, [g.id]: res.data }))
+          } catch (e) {
+            console.error(e)
+          }
+        }
+      })
+      await Promise.all(promises)
+    }
+    if (apiGroups.length > 0) {
+      loadAthletes()
+      // Expandir o primeiro grupo por padrão
+      if (expandedGroups.length === 0) {
+        setExpandedGroups([apiGroups[0].id])
+      }
+    }
+  }, [apiGroups])
 
   const toggleGroup = (id) => {
     setExpandedGroups(prev => 
@@ -64,7 +69,7 @@ export default function Atletas() {
   }
 
   const openAddModal = () => {
-    // Gera código automático: 3 letras + 3 números
+    // Código Hidratação único de sugestão (o back-end gera o seu final)
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     const numbers = '0123456789'
     let code = ''
@@ -79,45 +84,40 @@ export default function Atletas() {
     if (!newGroupName.trim()) return
     
     try {
-      // Integrando com POST /groups
-      const newApiGroup = await createGroup(newGroupName, 'Grupo criado no Dashboard');
-      
-      const newGroup = {
-        id: newApiGroup?.id || Math.random().toString(36).substr(2, 9),
-        name: newGroupName,
-        code: newApiGroup?.code || newGroupCode,
-        athletes: []
-      }
-      
-      setGroups([newGroup, ...groups])
-      setExpandedGroups([...expandedGroups, newGroup.id])
+      await createGroup(newGroupName, 'Grupo criado no Dashboard')
+      await fetchCoachGroups()
       setNewGroupName('')
       setIsModalOpen(false)
     } catch (err) {
-      console.error(err);
-      alert('Erro ao criar grupo via API, usando fallback local.');
-      const newGroup = {
-        id: Math.random().toString(36).substr(2, 9),
-        name: newGroupName,
-        code: newGroupCode,
-        athletes: []
-      }
-      setGroups([newGroup, ...groups])
-      setExpandedGroups([...expandedGroups, newGroup.id])
-      setNewGroupName('')
-      setIsModalOpen(false)
+      console.error(err)
+      alert('Erro ao criar grupo. Tente novamente.')
     }
   }
 
+  const getIcon = (modality) => {
+    switch (modality?.toLowerCase()) {
+      case 'corrida': return Activity
+      case 'ciclismo': return Bike
+      case 'futebol': return Trophy
+      case 'natação': return Waves
+      default: return Activity
+    }
+  }
+
+  // Filtrar grupos e atletas de acordo com a pesquisa
   const getFilteredGroups = () => {
-    if (!searchTerm.trim()) return groups
-    
-    return groups.map(group => ({
-      ...group,
-      athletes: group.athletes.filter(athlete => 
-        athlete.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    if (!searchTerm.trim()) return apiGroups
+
+    return apiGroups.map(group => {
+      const athletes = groupAthletesMap[group.id] || []
+      const filtered = athletes.filter(athlete => 
+        athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    })).filter(group => group.athletes.length > 0)
+      return {
+        ...group,
+        filteredAthletes: filtered
+      }
+    }).filter(group => (group.filteredAthletes || []).length > 0)
   }
 
   const filteredGroups = getFilteredGroups()
@@ -127,7 +127,7 @@ export default function Atletas() {
       <Sidebar />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <TopBar title="Atletas" subtitle="Gerencie e monitore sua equipe por grupos" />
+        <TopBar title="Atletas" subtitle="Gerencie e monitore sua equipe de forma inteligente" />
 
         <div className="flex-1 overflow-y-auto p-8">
           
@@ -154,15 +154,22 @@ export default function Atletas() {
           </div>
 
           <div className="space-y-8 pb-10">
-            {filteredGroups.map((group) => {
+            {isLoadingAll ? (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-400 font-bold gap-2">
+                <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
+                Carregando seus grupos...
+              </div>
+            ) : filteredGroups.map((group) => {
               const isExpanded = expandedGroups.includes(group.id)
-              
-              // TODO: calcular via API nos pontos de integração futura
+              const athletes = groupAthletesMap[group.id] || []
+              const displayAthletes = searchTerm.trim() ? (group.filteredAthletes || []) : athletes
+
+              // Contadores reais baseados nos dados do banco
               const counts = {
-                all: group.athletes.length,
-                risk: group.athletes.filter(a => a.status === 'risk').length,
-                attention: group.athletes.filter(a => a.status === 'attention').length,
-                ok: group.athletes.filter(a => a.status === 'ok').length,
+                all: athletes.length,
+                risk: athletes.filter(a => a.latestSession?.calculated?.riskLevel === 'high' || a.latestSession?.calculated?.riskLevel === 'critical').length,
+                attention: athletes.filter(a => a.latestSession?.calculated?.riskLevel === 'moderate').length,
+                ok: athletes.filter(a => !a.latestSession || a.latestSession?.calculated?.riskLevel === 'low').length,
               }
 
               return (
@@ -190,7 +197,7 @@ export default function Atletas() {
                     </div>
 
                     <div className="flex items-center gap-8">
-                      {/* Badges de Status */}
+                      {/* Badges de Status do Grupo */}
                       <div className="flex items-center gap-3">
                         <div className="flex flex-col items-center">
                           <span className="text-[var(--color-text-light)] text-[10px] font-black uppercase tracking-tighter mb-1">Total</span>
@@ -199,19 +206,17 @@ export default function Atletas() {
                         <div className="w-[1px] h-6 bg-gray-100 mx-1" />
                         <div className="flex flex-col items-center">
                           <span className="text-red-400 text-[10px] font-black uppercase tracking-tighter mb-1">Risco</span>
-                          <span className="bg-red-50 text-red-600 text-xs font-bold px-3 py-1 rounded-full">{counts.risk}</span>
+                          <span className={`text-xs font-bold px-3 py-1 rounded-full ${counts.risk > 0 ? 'bg-red-100 text-red-600' : 'bg-red-50 text-red-500'}`}>{counts.risk}</span>
                         </div>
                         <div className="flex flex-col items-center">
                           <span className="text-amber-400 text-[10px] font-black uppercase tracking-tighter mb-1">Atenção</span>
                           <span className="bg-amber-50 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">{counts.attention}</span>
                         </div>
                         <div className="flex flex-col items-center">
-                          <span className="text-emerald-400 text-[10px] font-black uppercase tracking-tighter mb-1">OK</span>
+                          <span className="text-emerald-400 text-[10px] font-black uppercase tracking-tighter mb-1">Saudável</span>
                           <span className="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full">{counts.ok}</span>
                         </div>
                       </div>
-
-
                     </div>
                   </div>
 
@@ -224,54 +229,88 @@ export default function Atletas() {
                             <th className="px-8 py-4">Atleta</th>
                             <th className="px-8 py-4">Modalidade</th>
                             <th className="px-8 py-4">Última Sessão</th>
-                            <th className="px-8 py-4">Sudorese</th>
-                            <th className="px-8 py-4">Perda</th>
-                            <th className="px-8 py-4">Status</th>
+                            <th className="px-8 py-4">Taxa de Sudorese</th>
+                            <th className="px-8 py-4">Perda de Massa</th>
+                            <th className="px-8 py-4">Estado Hídrico</th>
                             <th className="px-8 py-4 text-center">Ações</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                          {group.athletes.map((a, i) => (
-                            <tr key={i} className="hover:bg-gray-50/50 transition-colors group/row">
-                              <td className="px-8 py-5">
-                                <div className="flex items-center gap-4">
-                                  <div className={`w-11 h-11 rounded-2xl ${a.cor || 'bg-gray-200'} flex items-center justify-center text-white text-sm font-black shadow-lg shadow-gray-200/50 transform group-hover/row:scale-110 transition-transform`}>
-                                    {a.inicial || a.nome[0]}
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-extrabold text-gray-900">{a.nome}</p>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">ATL-{(i+1)*128}</p>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-8 py-5">
-                                <div className="flex items-center gap-2 text-xs font-bold text-gray-600">
-                                  <div className="p-1.5 bg-gray-50 rounded-lg">
-                                    {a.Icone ? <a.Icone className="w-4 h-4 text-gray-400" /> : <Activity className="w-4 h-4 text-gray-400" />}
-                                  </div>
-                                  {a.modality}
-                                </div>
-                              </td>
-                              <td className="px-8 py-5 text-xs text-gray-500 font-bold">{a.lastSession}</td>
-                              <td className="px-8 py-5 text-xs font-black text-[var(--color-primary)]">{a.sweatRate}</td>
-                              <td className="px-8 py-5 text-xs text-gray-500 font-black">{a.loss}</td>
-                              <td className="px-8 py-5">
-                                <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-tighter ${statusConfig[a.status].color}`}>
-                                  <div className="w-1.5 h-1.5 rounded-full bg-current" />
-                                  {statusConfig[a.status].label}
-                                </span>
-                              </td>
-                              <td className="px-8 py-5 text-center">
-                                <button 
-                                  onClick={() => navigate('/sudorese-atleta')} 
-                                  className="inline-flex items-center gap-2 bg-[var(--color-primary)] text-white text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-2xl hover:bg-[var(--color-primary-dark)] transition-all shadow-lg shadow-red-500/10 active:scale-95"
-                                >
-                                  Ver Perfil
-                                  <ChevronRight className="w-4 h-4" />
-                                </button>
+                          {displayAthletes.length > 0 ? (
+                            displayAthletes.map((a, i) => {
+                              const latest = a.latestSession
+                              const modality = latest?.sportModality || 'Sem registro'
+                              const Icone = getIcon(modality)
+                              
+                              const formattedDate = latest?.sessionDate 
+                                ? new Date(latest.sessionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+                                : 'Nenhum treino'
+                              
+                              const sweatRateText = latest?.calculated?.sweatRateMlPerHour 
+                                ? `${(latest.calculated.sweatRateMlPerHour / 1000).toFixed(2)} L/h`
+                                : '--'
+                              
+                              const lossText = latest?.calculated?.dehydrationPct 
+                                ? `-${latest.calculated.dehydrationPct.toFixed(1)}%`
+                                : '--'
+                              
+                              const risk = latest?.calculated?.riskLevel || 'low'
+                              const statusKey = (risk === 'critical' || risk === 'high') ? 'risk' : risk === 'moderate' ? 'attention' : 'ok'
+                              const statusData = statusConfig[statusKey]
+
+                              // Cores aleatórias e harmônicas baseadas na inicial
+                              const colors = ['bg-blue-500', 'bg-teal-500', 'bg-emerald-500', 'bg-violet-500', 'bg-amber-500', 'bg-rose-500']
+                              const userColor = colors[a.name.charCodeAt(0) % colors.length]
+
+                              return (
+                                <tr key={a.id} className="hover:bg-gray-50/50 transition-colors group/row">
+                                  <td className="px-8 py-5">
+                                    <div className="flex items-center gap-4">
+                                      <div className={`w-11 h-11 rounded-2xl ${userColor} flex items-center justify-center text-white text-sm font-black shadow-lg shadow-gray-200/50 transform group-hover/row:scale-110 transition-transform`}>
+                                        {a.name[0]}
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-extrabold text-gray-900">{a.name}</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{a.email}</p>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-8 py-5">
+                                    <div className="flex items-center gap-2 text-xs font-bold text-gray-600">
+                                      <div className="p-1.5 bg-gray-50 rounded-lg">
+                                        <Icone className="w-4 h-4 text-gray-400" />
+                                      </div>
+                                      {modality}
+                                    </div>
+                                  </td>
+                                  <td className="px-8 py-5 text-xs text-gray-500 font-bold">{formattedDate}</td>
+                                  <td className="px-8 py-5 text-xs font-black text-[var(--color-primary)]">{sweatRateText}</td>
+                                  <td className="px-8 py-5 text-xs text-gray-500 font-black">{lossText}</td>
+                                  <td className="px-8 py-5">
+                                    <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-tighter ${statusData.color}`}>
+                                      <div className="w-1.5 h-1.5 rounded-full bg-current" />
+                                      {statusData.label}
+                                    </span>
+                                  </td>
+                                  <td className="px-8 py-5 text-center">
+                                    <button 
+                                      onClick={() => navigate(`/sudorese?athleteId=${a.id}`)} 
+                                      className="inline-flex items-center gap-2 bg-[var(--color-primary)] text-white text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-2xl hover:bg-[var(--color-primary-dark)] transition-all shadow-lg shadow-red-500/10 active:scale-95"
+                                    >
+                                      Análise
+                                      <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              )
+                            })
+                          ) : (
+                            <tr>
+                              <td colSpan={7} className="px-8 py-10 text-center text-gray-400 text-xs font-semibold">
+                                {searchTerm.trim() ? 'Nenhum atleta corresponde à busca neste grupo' : 'Este grupo não possui atletas ativos. Compartilhe o código acima!'}
                               </td>
                             </tr>
-                          ))}
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -280,7 +319,7 @@ export default function Atletas() {
               )
             })}
 
-            {filteredGroups.length === 0 && (
+            {filteredGroups.length === 0 && !isLoadingAll && (
               <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                   <Users className="w-10 h-10 text-gray-200" />
@@ -330,13 +369,13 @@ export default function Atletas() {
               </div>
 
               <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100">
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Código Gerado</label>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Código Sugerido</label>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-black text-gray-800 tracking-[0.2em]">{newGroupCode}</span>
-                  <div className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-lg uppercase tracking-widest">Ativo</div>
+                  <div className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-lg uppercase tracking-widest">Gerando...</div>
                 </div>
                 <p className="text-[10px] text-gray-400 mt-4 font-medium italic">
-                  * Este código será usado pelos atletas para entrar no grupo via aplicativo mobile.
+                  * O código final do grupo será gerado pelo servidor de forma única para que seus atletas entrem nele.
                 </p>
               </div>
               
@@ -361,4 +400,3 @@ export default function Atletas() {
     </div>
   )
 }
-
