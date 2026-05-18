@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 // Import mobile and shared screens
 import Splash from '../screens/mobile/Splash';
@@ -17,12 +18,12 @@ import Grupo from '../screens/mobile/Grupo';
 
 // Simple Route Guard
 const PrivateRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 export default function MobileRoutes() {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
     <Routes>
