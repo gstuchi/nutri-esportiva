@@ -22,7 +22,6 @@ export default function Dashboard() {
     fetchActiveSession()
   }, [])
 
-  // Cálculos dinâmicos a partir do histórico de sessões completadas
   const completedSessions = athleteHistory || []
   const totalSweatRate = completedSessions.reduce((acc, s) => acc + (s.sweat_rate_ml_per_h || 0), 0)
   const avgSweatRate = completedSessions.length > 0 ? (totalSweatRate / completedSessions.length) : 0
@@ -92,12 +91,12 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen pb-24 bg-[var(--color-bg)] font-sans">
       
-      {/* Header curvado */}
+      {}
       <div className="bg-[var(--color-primary)] text-white pt-12 pb-20 px-6 rounded-b-[40px] shadow-md relative overflow-hidden">
-        {/* Elemento decorativo */}
+        {}
         <div className="absolute -top-24 -right-12 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
         
-        {/* Botão de Perfil - Topo Direito */}
+        {}
         <button 
           onClick={() => navigate('/perfil')}
           className="absolute top-10 right-6 z-20 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all active:scale-95"
@@ -107,14 +106,14 @@ export default function Dashboard() {
 
         <div className="relative z-10 flex items-center gap-2 mb-1">
           <h1 className="text-3xl font-bold tracking-tight">Olá, {userName}</h1>
-          <span className="text-2xl animate-bounce">👋</span>
+          <span className="text-2xl animate-bounce"></span>
         </div>
         <p className="text-white/90 text-sm font-medium">
           {hasActive ? 'Você tem uma sessão em andamento!' : 'Pronto para registrar a sessão de hoje?'}
         </p>
       </div>
 
-      {/* Stats Card flutuante */}
+      {}
       <div className="px-6 -mt-12 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-5 flex justify-between items-center ring-1 ring-gray-100 backdrop-blur-xl">
           {dynamicStats.map((s, i) => (
@@ -126,7 +125,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Session flow */}
+      {}
       <div className="px-6 mt-8">
         <h2 className="text-gray-800 font-bold text-lg mb-4">Fluxo da Sessão</h2>
 

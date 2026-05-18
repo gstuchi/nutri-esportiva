@@ -75,7 +75,7 @@ export default function Relatorio() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] font-sans pb-24">
-      {/* Header */}
+      {}
       <div className="bg-[var(--color-primary)] text-white pt-12 pb-16 px-4 rounded-b-[40px] shadow-md relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
         
@@ -87,10 +87,10 @@ export default function Relatorio() {
         </div>
       </div>
 
-      {/* Content */}
+      {}
       <div className="px-4 -mt-8 relative z-20 space-y-6">
         
-        {/* Main Training Card */}
+        {}
         <div className="bg-white rounded-3xl p-6 shadow-xl shadow-gray-200/50 ring-1 ring-gray-100">
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -124,7 +124,7 @@ export default function Relatorio() {
           </div>
         </div>
 
-        {/* Sweat Rate Card */}
+        {}
         <div className="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-gray-100 overflow-hidden relative">
           <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
             <Droplets className="w-32 h-32 text-blue-900" />
@@ -142,7 +142,7 @@ export default function Relatorio() {
             <span className="text-gray-400 font-bold mb-2 uppercase text-xs">Litros / Hora</span>
           </div>
 
-          {/* Visual Indicator (Progress Bar Style) */}
+          {}
           <div className="space-y-2">
             <div className="h-4 bg-gray-100 rounded-full overflow-hidden flex">
               <div 
@@ -158,9 +158,9 @@ export default function Relatorio() {
           </div>
         </div>
 
-        {/* Condition Indicators Grid */}
+        {}
         <div className="grid grid-cols-2 gap-4">
-           {/* Hydration Score */}
+           {}
            <div className="bg-white rounded-3xl p-5 shadow-sm ring-1 ring-gray-100">
               <Zap className="w-5 h-5 text-yellow-500 mb-3" />
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Hidratação</p>
@@ -174,7 +174,7 @@ export default function Relatorio() {
               </p>
            </div>
 
-           {/* Recovery Status */}
+           {}
            <div className="bg-white rounded-3xl p-5 shadow-sm ring-1 ring-gray-100">
               <Activity className="w-5 h-5 text-purple-500 mb-3" />
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Recuperação</p>
@@ -189,7 +189,7 @@ export default function Relatorio() {
            </div>
         </div>
 
-        {/* Tip Card */}
+        {}
         <div className="bg-gray-800 rounded-3xl p-6 text-white shadow-lg">
            <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Dica Científica</p>
            <h4 className="font-bold text-lg leading-tight mb-2">Seu protocolo personalizado</h4>

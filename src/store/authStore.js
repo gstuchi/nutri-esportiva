@@ -36,8 +36,7 @@ export const useAuthStore = create((set) => ({
     try {
       await api.post('/auth/register', { name, email, password, role });
       set({ isLoading: false });
-      // Após registrar, pode fazer login automaticamente se desejar,
-      // ou apenas retornar sucesso.
+
       return true;
     } catch (error) {
       set({ 
@@ -54,15 +53,12 @@ export const useAuthStore = create((set) => ({
     set({ user: null, isAuthenticated: false });
   },
 
-  // Simula buscar dados do usuário logado se o token existir (ex: ao recarregar a página)
-  // Requer uma rota GET /auth/me no backend (a ser adicionada se necessário)
   checkAuth: async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       set({ isAuthenticated: false, user: null });
       return;
     }
-    // Para simplificar, poderíamos decodificar o JWT no front ou buscar na API.
-    // O mais seguro é ter uma rota de perfil.
+
   }
 }));

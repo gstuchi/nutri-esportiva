@@ -23,7 +23,6 @@ export default function ResultadoSessao() {
     )
   }
 
-  // Use fallback values if sessionResults is missing (e.g. direct access without ID)
   const sweatRate = sessionResults?.sweat_rate_ml_per_h 
     ? (sessionResults.sweat_rate_ml_per_h / 1000).toFixed(2) 
     : '0.00';
@@ -46,7 +45,7 @@ export default function ResultadoSessao() {
   return (
     <div className="min-h-screen pb-32 bg-[var(--color-bg)] font-sans relative">
       
-      {/* Header */}
+      {}
       <div className="bg-[var(--color-primary)] text-white pt-12 pb-24 px-4 rounded-b-[30px] shadow-md relative overflow-hidden z-10">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
         
@@ -56,10 +55,10 @@ export default function ResultadoSessao() {
         </div>
       </div>
 
-      {/* Content */}
+      {}
       <div className="px-4 -mt-16 space-y-6 relative z-20">
 
-        {/* Main Card: Taxa de Sudorese */}
+        {}
         <div className="bg-[var(--color-primary-dark)] text-white rounded-[24px] p-6 shadow-xl shadow-red-900/20 text-center relative overflow-hidden border border-red-500/30">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-xl" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-lg" />
@@ -76,7 +75,7 @@ export default function ResultadoSessao() {
           </div>
         </div>
 
-        {/* 3 Metrics Row */}
+        {}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100 flex justify-between divide-x divide-gray-100 text-center">
           <div className="flex-1 px-2">
             <p className="text-orange-500 font-bold text-lg">-{dehydrationPct}%</p>
@@ -92,7 +91,7 @@ export default function ResultadoSessao() {
           </div>
         </div>
 
-        {/* Card: Recomendações */}
+        {}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
             <h2 className="text-[var(--color-primary-dark)] font-bold flex items-center gap-2">
@@ -126,7 +125,7 @@ export default function ResultadoSessao() {
           </ul>
         </div>
 
-        {/* Card: Estado Hídrico */}
+        {}
         {sessionResults?.dehydration_score !== undefined && (
           <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
             <div className="mb-3">
@@ -149,7 +148,7 @@ export default function ResultadoSessao() {
           </div>
         )}
 
-        {/* Ações Extra */}
+        {}
         <div className="flex gap-4 mb-20">
           <button className="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
             <FileText className="w-5 h-5 text-gray-400" />
@@ -166,7 +165,7 @@ export default function ResultadoSessao() {
 
       </div>
 
-      {/* Footer / Botão Principal */}
+      {}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent z-30 pb-8">
         <button 
           className="w-full bg-[var(--color-primary-dark)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-black/20 hover:bg-red-900 active:scale-95 transition-all flex items-center justify-center gap-2"

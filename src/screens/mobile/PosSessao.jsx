@@ -85,7 +85,7 @@ export default function PosSessao() {
   return (
     <div className="min-h-screen pb-32 bg-[var(--color-bg)] font-sans relative">
       
-      {/* Header */}
+      {}
       <div className="bg-[var(--color-primary)] text-white pt-12 pb-6 px-4 rounded-b-[30px] shadow-md relative overflow-hidden z-10">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
         
@@ -99,10 +99,10 @@ export default function PosSessao() {
         </div>
       </div>
 
-      {/* Content */}
+      {}
       <div className="px-4 mt-6 space-y-6">
 
-        {/* Card: Massa Corporal Pós-Exercício */}
+        {}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
             <h2 className="text-[var(--color-primary-dark)] font-bold flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function PosSessao() {
           </div>
         </div>
 
-        {/* Card: Sintomas Pós-Sessão */}
+        {}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
             <h2 className="text-[var(--color-primary-dark)] font-bold flex items-center gap-2">
@@ -149,7 +149,7 @@ export default function PosSessao() {
           </div>
         </div>
 
-        {/* Card: Tolerância ao Plano Hídrico */}
+        {}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
             <h2 className="text-[var(--color-primary-dark)] font-bold flex items-center gap-2">
@@ -174,7 +174,7 @@ export default function PosSessao() {
           </div>
         </div>
 
-        {/* Card: Reidratação Pós-Exercício (Líquido pós-treino) */}
+        {}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
             <h2 className="text-[var(--color-primary-dark)] font-bold flex items-center gap-2">
@@ -198,7 +198,7 @@ export default function PosSessao() {
 
       </div>
 
-      {/* Footer / Botão de Ação */}
+      {}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent z-20 pb-8">
         <button 
           className="w-full bg-[var(--color-primary)] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"

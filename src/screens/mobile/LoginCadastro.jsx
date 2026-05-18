@@ -7,8 +7,7 @@ export default function LoginCadastro() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  
-  // Form states
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -28,7 +27,7 @@ export default function LoginCadastro() {
         await login(email, password);
       } else {
         await register(name, email, password, 'athlete');
-        // Auto-login após cadastro
+
         await login(email, password);
       }
       navigate('/dashboard');
@@ -39,7 +38,7 @@ export default function LoginCadastro() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] font-sans flex flex-col">
-      {/* Header com Logo/Identidade */}
+      {}
       <div className="bg-[var(--color-primary)] text-white pt-16 pb-12 px-6 rounded-b-[40px] shadow-lg relative overflow-hidden flex flex-col items-center">
         <div className="absolute -top-20 -left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
@@ -54,7 +53,7 @@ export default function LoginCadastro() {
         <p className="text-white/80 text-sm font-medium text-center">Sua performance começa com uma boa hidratação</p>
       </div>
 
-      {/* Toggle Tab */}
+      {}
       <div className="px-6 -mt-8 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-1.5 flex ring-1 ring-gray-100">
           <button 
@@ -72,7 +71,7 @@ export default function LoginCadastro() {
         </div>
       </div>
 
-      {/* Form Section */}
+      {}
       <div className="flex-1 px-6 pt-8 pb-12 overflow-y-auto">
         <form onSubmit={handleSubmit} className="space-y-5">
           {!isLogin && (

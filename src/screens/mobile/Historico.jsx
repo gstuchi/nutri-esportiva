@@ -27,7 +27,6 @@ export default function Historico() {
     }
   }
 
-  // Filtrar sessões conforme o período selecionado
   const filtrarSessoes = (sessoes) => {
     const agora = new Date()
     return sessoes.filter((s) => {
@@ -38,13 +37,12 @@ export default function Historico() {
       if (filtroAtivo === '7 dias') return diffDays <= 7
       if (filtroAtivo === '30 dias') return diffDays <= 30
       if (filtroAtivo === '3 meses') return diffDays <= 90
-      return true // 'Tudo'
+      return true
     })
   }
 
   const sessoesFiltradas = filtrarSessoes(athleteHistory || [])
 
-  // Últimas 8 sessões para o gráfico (em ordem cronológica)
   const ultimasSessoesGrafico = [...sessoesFiltradas].reverse().slice(-8)
   const dadosGrafico = ultimasSessoesGrafico.map(s => (s.sweat_rate_ml_per_h || 0) / 1000)
 
@@ -63,14 +61,14 @@ export default function Historico() {
 
   return (
     <div className="min-h-screen pb-24 bg-[var(--color-bg)]">
-      {/* Header */}
+      {}
       <div className="bg-[var(--color-primary)] text-white pt-14 pb-6 px-5 rounded-b-[30px]">
         <h1 className="text-2xl font-bold">Histórico</h1>
         <p className="text-white/70 text-sm mt-0.5">Sua evolução de hidratação</p>
       </div>
 
       <div className="px-4 mt-5 space-y-5">
-        {/* Filtros de período */}
+        {}
         <div className="flex bg-white rounded-2xl p-1 shadow-sm ring-1 ring-gray-100 gap-1">
           {filtros.map((f) => (
             <button
@@ -90,7 +88,7 @@ export default function Historico() {
           ))}
         </div>
 
-        {/* Gráfico de Taxa de Sudorese */}
+        {}
         <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
             <p className="text-xs font-semibold text-[var(--color-primary)] flex items-center gap-1">
@@ -99,10 +97,10 @@ export default function Historico() {
             <p className="text-xs text-gray-400 mt-0.5">Últimas {dadosGrafico.length} sessões</p>
           </div>
 
-          {/* Gráfico de barras com linhas de referência */}
+          {}
           {dadosGrafico.length > 0 ? (
             <div className="relative h-28 mb-4">
-              {/* Linhas horizontais de referência */}
+              {}
               <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                 <div className="flex items-center gap-1">
                   <div className="flex-1 h-[1px] bg-gray-100" />
@@ -114,7 +112,7 @@ export default function Historico() {
                 </div>
               </div>
 
-              {/* Barras */}
+              {}
               <div className="flex items-end gap-1.5 h-full pr-12">
                 {dadosGrafico.map((val, i) => {
                   const altura = (val / maxValor) * 100
@@ -140,7 +138,7 @@ export default function Historico() {
 
           <div className="h-[1px] bg-gray-100 mb-4" />
 
-          {/* Estatísticas */}
+          {}
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
               <p className="text-[11px] text-gray-400 mb-1">Média</p>
@@ -157,7 +155,7 @@ export default function Historico() {
           </div>
         </div>
 
-        {/* Sessões Recentes */}
+        {}
         <div>
           <h2 className="text-base font-bold text-[var(--color-text)] mb-3">Sessões Recentes</h2>
           {sessoesFiltradas.length > 0 ? (
