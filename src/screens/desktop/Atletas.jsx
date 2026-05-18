@@ -28,7 +28,6 @@ export default function Atletas() {
   const [newGroupCode, setNewGroupCode] = useState('')
   const [isLoadingAll, setIsLoadingAll] = useState(false)
 
-  // 1. Carregar grupos do Coach no Mount
   useEffect(() => {
     const loadData = async () => {
       setIsLoadingAll(true)
@@ -38,7 +37,6 @@ export default function Atletas() {
     loadData()
   }, [])
 
-  // 2. Pré-carregar os atletas de todos os grupos em paralelo para busca e contadores imediatos
   useEffect(() => {
     const loadAthletes = async () => {
       const promises = apiGroups.map(async (g) => {
@@ -55,7 +53,7 @@ export default function Atletas() {
     }
     if (apiGroups.length > 0) {
       loadAthletes()
-      // Expandir o primeiro grupo por padrão
+
       if (expandedGroups.length === 0) {
         setExpandedGroups([apiGroups[0].id])
       }
@@ -69,7 +67,7 @@ export default function Atletas() {
   }
 
   const openAddModal = () => {
-    // Código Hidratação único de sugestão (o back-end gera o seu final)
+
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     const numbers = '0123456789'
     let code = ''
@@ -104,7 +102,6 @@ export default function Atletas() {
     }
   }
 
-  // Filtrar grupos e atletas de acordo com a pesquisa
   const getFilteredGroups = () => {
     if (!searchTerm.trim()) return apiGroups
 
@@ -131,7 +128,7 @@ export default function Atletas() {
 
         <div className="flex-1 overflow-y-auto p-8">
           
-          {/* Sub-header: Busca + Ações */}
+          {}
           <div className="flex items-center justify-between mb-10">
             <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-2xl px-5 py-3.5 w-96 shadow-sm focus-within:ring-2 focus-within:ring-red-100 focus-within:border-[var(--color-primary)] transition-all">
               <Search className="w-5 h-5 text-gray-400" />
@@ -164,7 +161,6 @@ export default function Atletas() {
               const athletes = groupAthletesMap[group.id] || []
               const displayAthletes = searchTerm.trim() ? (group.filteredAthletes || []) : athletes
 
-              // Contadores reais baseados nos dados do banco
               const counts = {
                 all: athletes.length,
                 risk: athletes.filter(a => a.latestSession?.calculated?.riskLevel === 'high' || a.latestSession?.calculated?.riskLevel === 'critical').length,
@@ -174,7 +170,7 @@ export default function Atletas() {
 
               return (
                 <div key={group.id} className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-md">
-                  {/* Cabeçalho do Grupo (Accordion Header) */}
+                  {}
                   <div 
                     className="flex items-center justify-between px-8 py-6 cursor-pointer hover:bg-gray-50/50 transition-colors"
                     onClick={() => toggleGroup(group.id)}
@@ -197,7 +193,7 @@ export default function Atletas() {
                     </div>
 
                     <div className="flex items-center gap-8">
-                      {/* Badges de Status do Grupo */}
+                      {}
                       <div className="flex items-center gap-3">
                         <div className="flex flex-col items-center">
                           <span className="text-[var(--color-text-light)] text-[10px] font-black uppercase tracking-tighter mb-1">Total</span>
@@ -220,7 +216,7 @@ export default function Atletas() {
                     </div>
                   </div>
 
-                  {/* Conteúdo do Grupo (Tabela) */}
+                  {}
                   {isExpanded && (
                     <div className="border-t border-gray-50 overflow-x-auto bg-white">
                       <table className="w-full text-left">
@@ -258,7 +254,6 @@ export default function Atletas() {
                               const statusKey = (risk === 'critical' || risk === 'high') ? 'risk' : risk === 'moderate' ? 'attention' : 'ok'
                               const statusData = statusConfig[statusKey]
 
-                              // Cores aleatórias e harmônicas baseadas na inicial
                               const colors = ['bg-blue-500', 'bg-teal-500', 'bg-emerald-500', 'bg-violet-500', 'bg-amber-500', 'bg-rose-500']
                               const userColor = colors[a.name.charCodeAt(0) % colors.length]
 
@@ -338,7 +333,7 @@ export default function Atletas() {
         </div>
       </div>
 
-      {/* Modal Novo Grupo */}
+      {}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-md overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">

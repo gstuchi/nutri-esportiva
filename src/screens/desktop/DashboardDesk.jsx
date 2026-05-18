@@ -35,7 +35,6 @@ export default function Dashboard() {
     }
   }, [groups, selectedGroupId])
 
-  // --- 1. Cálculos de Estatísticas ---
   const totalAthletes = currentGroupAthletes.length
 
   const athletesWithSessions = currentGroupAthletes.filter(a => a.latestSession?.calculated)
@@ -60,7 +59,6 @@ export default function Dashboard() {
     })
   })
 
-  // --- 2. Cálculos para Gráfico por Modalidade ---
   const modalityTotals = {
     Corrida: { total: 0, count: 0 },
     Ciclismo: { total: 0, count: 0 },
@@ -89,7 +87,6 @@ export default function Dashboard() {
 
   const maxModalityValue = Math.max(...Object.values(modalityAverages), 1)
 
-  // --- 3. Sessões Recentes Combinadas ---
   const allRecentSessions = []
   currentGroupAthletes.forEach(a => {
     a.recentSessions?.forEach(s => {
@@ -120,10 +117,10 @@ export default function Dashboard() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar title="Dashboard" subtitle="Painel Web de Monitoramento de Hidratação" />
 
-        {/* Content */}
+        {}
         <main className="flex-1 overflow-y-auto p-6 space-y-5">
           
-          {/* Seletor de Grupo */}
+          {}
           <div className="flex items-center justify-between bg-white rounded-2xl p-4 shadow-sm ring-1 ring-gray-100">
             <div>
               <h2 className="text-sm font-bold text-gray-800">Selecione o Grupo de Atletas</h2>
@@ -146,9 +143,9 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Stats Cards */}
+          {}
           <div className="grid grid-cols-4 gap-4">
-            {/* Atletas Ativos */}
+            {}
             <div className="bg-white rounded-2xl p-4 shadow-sm ring-1 ring-gray-100">
               <div className="flex items-start justify-between mb-3">
                 <p className="text-xs text-[var(--color-text-light)] font-bold uppercase tracking-wider">Atletas no Grupo</p>
@@ -160,7 +157,7 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Taxa Média */}
+            {}
             <div className="bg-white rounded-2xl p-4 shadow-sm ring-1 ring-gray-100">
               <div className="flex items-start justify-between mb-3">
                 <p className="text-xs text-[var(--color-text-light)] font-bold uppercase tracking-wider">Taxa Média de Sudorese</p>
@@ -172,7 +169,7 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Alertas */}
+            {}
             <div className="bg-white rounded-2xl p-4 shadow-sm ring-1 ring-gray-100">
               <div className="flex items-start justify-between mb-3">
                 <p className="text-xs text-[var(--color-text-light)] font-bold uppercase tracking-wider">Atletas em Risco</p>
@@ -184,7 +181,7 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Sessões Semanais */}
+            {}
             <div className="bg-white rounded-2xl p-4 shadow-sm ring-1 ring-gray-100">
               <div className="flex items-start justify-between mb-3">
                 <p className="text-xs text-[var(--color-text-light)] font-bold uppercase tracking-wider">Sessões Recentes (7d)</p>
@@ -197,10 +194,10 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Linha 2: Gráfico por Modalidade + Atletas em Risco */}
+          {}
           <div className="grid grid-cols-3 gap-4">
 
-            {/* Gráfico */}
+            {}
             <div className="col-span-2 bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -220,7 +217,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Corpo do Gráfico de Barras */}
+              {}
               {Object.values(modalityAverages).some(val => val > 0) ? (
                 <div className="h-44 flex items-end gap-6 px-6 pt-4 border-b border-gray-100">
                   {Object.entries(modalityAverages).map(([modalidade, mediaVal]) => {
@@ -228,11 +225,11 @@ export default function Dashboard() {
                     const porcentagem = (mediaVal / maxModalityValue) * 100
                     return (
                       <div key={modalidade} className="flex-1 flex flex-col items-center group relative h-full justify-end pb-1">
-                        {/* Tooltip de valor */}
+                        {}
                         <div className="absolute -top-4 bg-gray-800 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow opacity-0 group-hover:opacity-100 transition-opacity">
                           {mediaVal.toFixed(2)} L/h
                         </div>
-                        {/* Barra */}
+                        {}
                         <div 
                           className="w-12 rounded-t-lg transition-all duration-500 hover:brightness-95 cursor-pointer shadow-sm"
                           style={{ height: `${porcentagem}%`, background: cor }}
@@ -249,7 +246,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Atletas em Risco */}
+            {}
             <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-bold text-[var(--color-text)] flex items-center gap-1.5">
@@ -286,10 +283,10 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Linha 3: Sessões + Ações Rápidas */}
+          {}
           <div className="grid grid-cols-3 gap-4">
 
-            {/* Tabela de sessões */}
+            {}
             <div className="col-span-2 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden flex flex-col justify-between">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <h2 className="text-sm font-bold text-[var(--color-text)] flex items-center gap-1.5">
@@ -341,7 +338,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Ações rápidas */}
+            {}
             <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100 flex flex-col justify-between">
               <h2 className="text-sm font-bold text-[var(--color-text)] mb-3">Ações Rápidas do Técnico</h2>
               <div className="space-y-2">

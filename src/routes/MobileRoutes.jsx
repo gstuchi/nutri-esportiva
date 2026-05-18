@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
-// Import mobile and shared screens
 import Splash from '../screens/mobile/Splash';
 import Dashboard from '../screens/mobile/Dashboard';
 import PreSessao from '../screens/mobile/PreSessao';
@@ -16,7 +15,6 @@ import Perfil from '../screens/mobile/Perfil';
 import LoginCadastro from '../screens/mobile/LoginCadastro';
 import Grupo from '../screens/mobile/Grupo';
 
-// Simple Route Guard
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -30,7 +28,7 @@ export default function MobileRoutes() {
       <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Splash />} />
       <Route path="/login" element={<LoginCadastro />} />
       
-      {/* Private Routes */}
+      {}
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/pre-sessao" element={<PrivateRoute><PreSessao /></PrivateRoute>} />
       <Route path="/durante-sessao" element={<PrivateRoute><DuranteSessao /></PrivateRoute>} />
@@ -45,6 +43,4 @@ export default function MobileRoutes() {
     </Routes>
   );
 }
-
-
 

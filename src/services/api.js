@@ -19,10 +19,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Token expirado ou inválido
+
       localStorage.removeItem('token');
       localStorage.removeItem('isAuthenticated');
-      // Redirecionar para login poderia ser feito aqui, mas deixaremos para o authStore
+
     }
     return Promise.reject(error);
   }
