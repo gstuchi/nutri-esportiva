@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-// Import desktop screens
 import Login from '../screens/desktop/Login';
 import DashboardDesk from '../screens/desktop/DashboardDesk';
 import Atletas from '../screens/desktop/Atletas';
@@ -17,6 +16,7 @@ export default function DesktopRoutes() {
       <Route path="/dashboard" element={<DashboardDesk />} />
       <Route path="/atletas" element={<Atletas />} />
       <Route path="/sudorese-atleta" element={<Sudorese />} />
+      <Route path="/sudorese" element={<Sudorese />} />
       <Route path="/triagem-de-risco" element={<Triagem />} />
       <Route path="/relatorios" element={<RelatorioDesk />} />
       <Route path="/perfil" element={<PerfilDesk />} />
