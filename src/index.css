@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #D01F25;
+  --color-primary-dark: #A5171D;
+  --color-bg: #F3F4F6;
+  --color-text: #1F2937;
+  --color-text-light: #6B7280;
+  --color-card: #FFFFFF;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Remove default scrollbar for aesthetics */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
