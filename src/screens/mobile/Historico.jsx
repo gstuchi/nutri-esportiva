@@ -162,7 +162,7 @@ export default function Historico() {
             <div className="space-y-3">
               {(verTudo ? sessoesFiltradas : sessoesFiltradas.slice(0, 3)).map((s, i) => {
                 const Icon = getIcon(s.sport_modality)
-                const dataFormatada = new Date(s.session_date).toLocaleDateString('pt-BR', {
+                const dataFormatada = new Date(s.session_date).toLocaleString('pt-BR', {
                   day: '2-digit',
                   month: 'short',
                   hour: '2-digit',
@@ -175,7 +175,7 @@ export default function Historico() {
                   <div
                     key={s.id || i}
                     onClick={() => navigate(`/resultado-sessao?id=${s.id}&from=historico`)}
-                    className="bg-white rounded-2xl px-4 py-3.5 shadow-sm ring-1 ring-gray-100 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:scale-98 transition-all"
+                    className="bg-white rounded-2xl px-4 py-3.5 shadow-sm ring-1 ring-gray-100 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:scale-95 transition-all"
                   >
                     <div>
                       <p className="text-sm font-semibold text-[var(--color-text)] flex items-center gap-2">
@@ -188,7 +188,7 @@ export default function Historico() {
                         <p className="text-sm font-bold text-[var(--color-primary)] flex items-center gap-1.5 justify-end">
                           {taxaLitros.toFixed(2)} L/h
                         </p>
-                        <p className="text-xs text-gray-400 mt-0.5">-{perdaPesoPct.toFixed(1)}% peso</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{perdaPesoPct > 0 ? `-${perdaPesoPct.toFixed(1)}%` : '0.0%'} peso</p>
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-300" />
                     </div>
