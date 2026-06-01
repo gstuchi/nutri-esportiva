@@ -1,0 +1,190 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  passwordHash  String
+  role          String   // "coach" ou "athlete"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  athleteProfile AthleteProfile?
+  coachProfile   CoachProfile?
+  weightLogs     WeightLog[]
+  memberships    GroupMembership[]
+  sessions       Session[]
+  groups         Group[]
+  notifications  NotificationLog[] @relation("AthleteNotifications")
+  coachNotifications NotificationLog[] @relation("CoachNotifications")
+}
+
+model AthleteProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  birthDate    DateTime
+  weightKg     Float
+  heightCm     Float
+
+  sexo                String?  // "masculino", "feminino"
+  modalidadePrincipal String?  // ex: "Corrida de Rua", "Ciclismo"
+
+  // Perfil Eletrolítico
+  sweatTaste   String   // "salty", "normal", "not_sure"
+  sweatMarks   String   // "always", "sometimes", "rarely"
+  crampHistory String   // "never", "during", "after", "both"
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WeightLog {
+  id          String   @id @default(uuid())
+  athleteId   String
+  weightKg    Float
+  measuredAt  DateTime @default(now())
+  source      String   // "manual", "session"
+
+  athlete     User     @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+}
+
+model CoachProfile {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  credential String?  // CREF ou equivalente
+  bio        String?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  coachId     String
+  name        String
+  code        String   @unique // ex: "HID-4X9K", gerado no backend
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  coach       User     @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  memberships GroupMembership[]
+  sessions    Session[]
+}
+
+model GroupMembership {
+  id        String   @id @default(uuid())
+  groupId   String
+  athleteId String
+  joinedAt  DateTime @default(now())
+  status    String   // "active", "removed", "left"
+
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  athlete   User     @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, athleteId])
+}
+
+model Session {
+  id            String   @id @default(uuid())
+  athleteId     String
+  groupId       String?
+  sportModality String
+  sessionDate   DateTime @default(now())
+  status        String   // "in_progress", "completed"
+  createdAt     DateTime @default(now())
+
+  athlete       User     @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  group         Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  sessionInitial SessionInitial?
+  sessionDuring  SessionDuring?
+  sessionPost    SessionPost?
+  calculated     SessionCalculated?
+  notifications  NotificationLog[]
+}
+
+model SessionInitial {
+  id                   String   @id @default(uuid())
+  sessionId            String   @unique
+  timeStart            String   // ex: "14:30"
+  bodyWeightKg         Float
+  urineColor           Int      // 1 a 8 (Escala de Armstrong)
+  temperatureCelsius   Float
+  humidityPercent      Float
+  solarExposure        String   // "none", "partial", "full"
+
+  // Estado de hidratação pré-treino
+  preSessionFluidMl    Int?
+  preSessionUrineColor Int?
+
+  recordedAt           DateTime @default(now())
+
+  session              Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model SessionDuring {
+  id                   String   @id @default(uuid())
+  sessionId            String   @unique
+  waterIngestedMl      Int
+  fluidType            String   // "water", "isotonic", "hypertonic", "other"
+  perceivedExertionRpe Int      // 0 a 10 (Borg Modificado)
+
+  session              Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model SessionPost {
+  id                      String   @id @default(uuid())
+  sessionId               String   @unique
+  timeEnd                 String   // ex: "16:00"
+  bodyWeightPostKg        Float?
+  hydrationPlanTolerance  String   // "good", "partial", "poor"
+  notes                   String?
+  symptoms                String   // sintomas separados por vírgula ex: "nausea,cramps" ou "none"
+  postSessionFluidMl      Int?
+  recordedAt              DateTime @default(now())
+
+  session                 Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model SessionCalculated {
+  id                        String   @id @default(uuid())
+  sessionId                 String   @unique
+  durationMinutes           Int
+  sweatRateMlPerHour        Float?
+  dehydrationPct            Float?
+  dehydrationScore          Int?     // 0 a 100
+  hydrationRecommendationMl Int?
+  riskLevel                 String   // "low", "moderate", "high", "critical"
+  electrolyteRisk           String   // "low", "moderate", "high"
+  rehydrationTargetMl       Int?
+  rehydrationAdherence      String   // "full", "partial", "none"
+  calculatedAt              DateTime @default(now())
+  calculationVersion        String   // "v1.0"
+
+  session                   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model NotificationLog {
+  id         String   @id @default(uuid())
+  athleteId  String
+  sessionId  String?
+  coachId    String?
+  type       String   // "risk_high", "risk_critical", "dehydration_warning", "electrolyte_warning", "rehydration_reminder"
+  channel    String   // "push", "in_app", "email"
+  sentAt     DateTime @default(now())
+  readAt     DateTime?
+
+  athlete    User     @relation("AthleteNotifications", fields: [athleteId], references: [id], onDelete: Cascade)
+  coach      User?    @relation("CoachNotifications", fields: [coachId], references: [id], onDelete: Cascade)
+  session    Session? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+}
