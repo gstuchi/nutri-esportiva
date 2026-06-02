@@ -144,6 +144,7 @@ export const startSession = async (req: AuthenticatedRequest, res: Response) => 
       return newSession;
     });
 
+
     // Buscar sessão completa com a etapa inicial inclusa
     const completeSession = await prisma.session.findUnique({
       where: { id: session.id },

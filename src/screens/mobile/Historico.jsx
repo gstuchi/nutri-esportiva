@@ -11,7 +11,7 @@ export default function Historico() {
   const [filtroAtivo, setFiltroAtivo] = useState('Tudo')
   const [verTudo, setVerTudo] = useState(false)
 
-  const { athleteHistory, fetchAthleteHistory } = useSessionStore()
+  const { athleteHistory, fetchAthleteHistory, isLoading, error } = useSessionStore()
 
   useEffect(() => {
     fetchAthleteHistory()
@@ -55,8 +55,8 @@ export default function Historico() {
   const minimo = dadosGrafico.length > 0 
     ? Math.min(...dadosGrafico).toFixed(2) 
     : '0.00'
-  const maxValor = dadosGrafico.length > 0 
-    ? Math.max(...dadosGrafico) 
+  const maxValor = dadosGrafico.length > 0
+    ? Math.max(...dadosGrafico, 0.01)
     : 1
 
   return (
@@ -67,6 +67,25 @@ export default function Historico() {
         <p className="text-white/70 text-sm mt-0.5">Sua evolução de hidratação</p>
       </div>
 
+      {isLoading && (
+        <div className="flex justify-center items-center py-16">
+          <div className="w-8 h-8 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
+      {error && !isLoading && (
+        <div className="mx-4 mt-5 bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
+          <p className="text-red-500 text-sm font-semibold mb-2">Erro ao carregar histórico</p>
+          <button
+            onClick={fetchAthleteHistory}
+            className="text-xs font-bold text-[var(--color-primary)] underline"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
+
+      {!isLoading && !error && (
       <div className="px-4 mt-5 space-y-5">
         {}
         <div className="flex bg-white rounded-2xl p-1 shadow-sm ring-1 ring-gray-100 gap-1">
@@ -115,15 +134,18 @@ export default function Historico() {
               {}
               <div className="flex items-end gap-1.5 h-full pr-12">
                 {dadosGrafico.map((val, i) => {
-                  const altura = (val / maxValor) * 100
-                  const isMax = val === maxValor
+                  const isZero = val === 0
+                  const isMax = !isZero && val === Math.max(...dadosGrafico)
+                  const alturaStyle = isZero
+                    ? { height: '4px' }
+                    : { height: `${(val / maxValor) * 100}%` }
                   return (
                     <div key={i} className="flex-1 h-full flex items-end">
                       <div
                         className={`w-full rounded-t-lg transition-all ${
-                          isMax ? 'bg-[var(--color-primary)]' : 'bg-red-200'
+                          isZero ? 'bg-gray-200' : isMax ? 'bg-[var(--color-primary)]' : 'bg-red-200'
                         }`}
-                        style={{ height: `${altura}%` }}
+                        style={alturaStyle}
                       />
                     </div>
                   )
@@ -162,7 +184,7 @@ export default function Historico() {
             <div className="space-y-3">
               {(verTudo ? sessoesFiltradas : sessoesFiltradas.slice(0, 3)).map((s, i) => {
                 const Icon = getIcon(s.sport_modality)
-                const dataFormatada = new Date(s.session_date).toLocaleDateString('pt-BR', {
+                const dataFormatada = new Date(s.session_date).toLocaleString('pt-BR', {
                   day: '2-digit',
                   month: 'short',
                   hour: '2-digit',
@@ -174,8 +196,8 @@ export default function Historico() {
                 return (
                   <div
                     key={s.id || i}
-                    onClick={() => navigate(`/resultado-sessao?id=${s.id}`)}
-                    className="bg-white rounded-2xl px-4 py-3.5 shadow-sm ring-1 ring-gray-100 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:scale-98 transition-all"
+                    onClick={() => navigate(`/resultado-sessao?id=${s.id}&from=historico`)}
+                    className="bg-white rounded-2xl px-4 py-3.5 shadow-sm ring-1 ring-gray-100 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:scale-95 transition-all"
                   >
                     <div>
                       <p className="text-sm font-semibold text-[var(--color-text)] flex items-center gap-2">
@@ -188,7 +210,7 @@ export default function Historico() {
                         <p className="text-sm font-bold text-[var(--color-primary)] flex items-center gap-1.5 justify-end">
                           {taxaLitros.toFixed(2)} L/h
                         </p>
-                        <p className="text-xs text-gray-400 mt-0.5">-{perdaPesoPct.toFixed(1)}% peso</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{perdaPesoPct > 0 ? `-${perdaPesoPct.toFixed(1)}%` : '0.0%'} peso</p>
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-300" />
                     </div>
@@ -212,6 +234,7 @@ export default function Historico() {
           )}
         </div>
       </div>
+      )}
 
       <BottomNav />
     </div>

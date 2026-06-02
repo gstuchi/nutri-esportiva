@@ -4,6 +4,7 @@ import authRoutes from './routes/auth.routes';
 import groupRoutes from './routes/group.routes';
 import sessionRoutes from './routes/session.routes';
 import athleteRoutes from './routes/athlete.routes';
+import electrolyteRoutes from './routes/electrolyte.routes';
 
 const app = express();
 
@@ -21,5 +22,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/athletes', athleteRoutes);
+app.use('/api/electrolytes', electrolyteRoutes);
 
 export default app;

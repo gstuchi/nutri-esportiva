@@ -24,6 +24,19 @@ model User {
   groups         Group[]
   notifications  NotificationLog[] @relation("AthleteNotifications")
   coachNotifications NotificationLog[] @relation("CoachNotifications")
+  electrolyteAssessments ElectrolyteAssessment[]
+}
+
+model ElectrolyteAssessment {
+  id                String   @id @default(uuid())
+  athleteId         String
+  sweatMarksScore   Int
+  crampScore        Int
+  saltyScore        Int
+  concentration     Int
+  createdAt         DateTime @default(now())
+
+  athlete           User     @relation(fields: [athleteId], references: [id], onDelete: Cascade)
 }
 
 model AthleteProfile {
@@ -35,6 +48,7 @@ model AthleteProfile {
 
   sexo                String?  // "masculino", "feminino"
   modalidadePrincipal String?  // ex: "Corrida de Rua", "Ciclismo"
+
 
   // Perfil Eletrolítico
   sweatTaste   String   // "salty", "normal", "not_sure"

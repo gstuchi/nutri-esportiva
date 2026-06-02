@@ -39,7 +39,8 @@ export default function PreSessao() {
       navigate('/durante-sessao');
     } catch (err) {
       console.error(err);
-      alert('Erro ao iniciar sessão');
+      const msg = err?.response?.data?.error || err?.message || 'Erro desconhecido';
+      alert('ERRO: ' + msg);
     }
   }
 
