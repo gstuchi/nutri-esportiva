@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, AlertTriangle } from 'lucide-react'
+import { ChevronLeft, AlertTriangle, Clock } from 'lucide-react'
 import { api } from '../../services/api'
 
 const questions = [
@@ -50,6 +50,12 @@ export default function Eletrolitos() {
   const navigate = useNavigate()
   const [answers, setAnswers] = useState({ marcas: null, caibras: null, gosto: null })
   const [isSaving, setIsSaving] = useState(false)
+  const [toast, setToast] = useState(null)
+  const [history, setHistory] = useState([])
+
+  useEffect(() => {
+    api.get('/electrolytes/history').then(r => setHistory(r.data)).catch(() => {})
+  }, [])
 
   const concentration = useMemo(() => {
     const total = Object.values(answers).reduce((sum, score) => sum + (score ?? 0), 0)
@@ -74,10 +80,13 @@ export default function Eletrolitos() {
         saltyScore:      answers.gosto,
         concentration,
       })
-      navigate('/historico')
+      setToast({ type: 'success', msg: 'Avaliação salva com sucesso!' })
+      api.get('/electrolytes/history').then(r => setHistory(r.data)).catch(() => {})
+      setTimeout(() => navigate('/historico'), 1500)
     } catch (err) {
       console.error(err)
-      alert('Erro ao salvar avaliação. Tente novamente.')
+      setToast({ type: 'error', msg: 'Erro ao salvar. Tente novamente.' })
+      setTimeout(() => setToast(null), 3000)
     } finally {
       setIsSaving(false)
     }
@@ -85,6 +94,14 @@ export default function Eletrolitos() {
 
   return (
     <div className="min-h-screen pb-32 bg-[var(--color-bg)] font-sans relative">
+
+      {toast && (
+        <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl shadow-lg text-white text-sm font-semibold transition-all ${
+          toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`}>
+          {toast.msg}
+        </div>
+      )}
 
       {/* Header */}
       <div className="bg-[var(--color-primary)] text-white pt-12 pb-6 px-4 rounded-b-[30px] shadow-md relative overflow-hidden z-10">
@@ -183,6 +200,29 @@ export default function Eletrolitos() {
             </p>
           </div>
         </div>
+
+        {/* Histórico de avaliações */}
+        {history.length > 0 && (
+          <div className="bg-white rounded-2xl p-5 shadow-sm ring-1 ring-gray-100">
+            <h2 className="text-gray-800 font-bold text-base mb-4 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-gray-400" /> Avaliações Anteriores
+            </h2>
+            <div className="space-y-3">
+              {history.slice(0, 5).map((item) => {
+                const color = getBarColor(item.concentration)
+                const data = new Date(item.createdAt).toLocaleString('pt-BR', {
+                  day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                })
+                return (
+                  <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                    <span className="text-xs text-gray-400">{data}</span>
+                    <span className="text-sm font-bold" style={{ color }}>~{item.concentration} mEq/L</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
       </div>
 

@@ -11,7 +11,7 @@ export default function Historico() {
   const [filtroAtivo, setFiltroAtivo] = useState('Tudo')
   const [verTudo, setVerTudo] = useState(false)
 
-  const { athleteHistory, fetchAthleteHistory } = useSessionStore()
+  const { athleteHistory, fetchAthleteHistory, isLoading, error } = useSessionStore()
 
   useEffect(() => {
     fetchAthleteHistory()
@@ -67,6 +67,25 @@ export default function Historico() {
         <p className="text-white/70 text-sm mt-0.5">Sua evolução de hidratação</p>
       </div>
 
+      {isLoading && (
+        <div className="flex justify-center items-center py-16">
+          <div className="w-8 h-8 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
+      {error && !isLoading && (
+        <div className="mx-4 mt-5 bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
+          <p className="text-red-500 text-sm font-semibold mb-2">Erro ao carregar histórico</p>
+          <button
+            onClick={fetchAthleteHistory}
+            className="text-xs font-bold text-[var(--color-primary)] underline"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
+
+      {!isLoading && !error && (
       <div className="px-4 mt-5 space-y-5">
         {}
         <div className="flex bg-white rounded-2xl p-1 shadow-sm ring-1 ring-gray-100 gap-1">
@@ -215,6 +234,7 @@ export default function Historico() {
           )}
         </div>
       </div>
+      )}
 
       <BottomNav />
     </div>
