@@ -55,8 +55,8 @@ export default function Historico() {
   const minimo = dadosGrafico.length > 0 
     ? Math.min(...dadosGrafico).toFixed(2) 
     : '0.00'
-  const maxValor = dadosGrafico.length > 0 
-    ? Math.max(...dadosGrafico) 
+  const maxValor = dadosGrafico.length > 0
+    ? Math.max(...dadosGrafico, 0.01)
     : 1
 
   return (
@@ -115,15 +115,18 @@ export default function Historico() {
               {}
               <div className="flex items-end gap-1.5 h-full pr-12">
                 {dadosGrafico.map((val, i) => {
-                  const altura = (val / maxValor) * 100
-                  const isMax = val === maxValor
+                  const isZero = val === 0
+                  const isMax = !isZero && val === Math.max(...dadosGrafico)
+                  const alturaStyle = isZero
+                    ? { height: '4px' }
+                    : { height: `${(val / maxValor) * 100}%` }
                   return (
                     <div key={i} className="flex-1 h-full flex items-end">
                       <div
                         className={`w-full rounded-t-lg transition-all ${
-                          isMax ? 'bg-[var(--color-primary)]' : 'bg-red-200'
+                          isZero ? 'bg-gray-200' : isMax ? 'bg-[var(--color-primary)]' : 'bg-red-200'
                         }`}
-                        style={{ height: `${altura}%` }}
+                        style={alturaStyle}
                       />
                     </div>
                   )
