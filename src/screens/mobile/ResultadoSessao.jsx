@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { FileText, History, Droplet, ClipboardList, CheckCircle2, AlertTriangle, Info } from 'lucide-react'
+import { History, Droplet, ClipboardList, CheckCircle2, AlertTriangle, Info } from 'lucide-react'
 import { useSessionStore } from '../../store/sessionStore'
 
 export default function ResultadoSessao() {
@@ -151,10 +151,6 @@ export default function ResultadoSessao() {
 
         {}
         <div className="flex gap-4 mb-20">
-          <button className="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
-            <FileText className="w-5 h-5 text-gray-400" />
-            PDF
-          </button>
           <button 
             onClick={() => navigate('/historico')}
             className="flex-1 bg-[var(--color-primary)] text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 hover:bg-[var(--color-primary-dark)] transition-colors"

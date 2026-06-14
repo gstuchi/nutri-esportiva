@@ -10,6 +10,7 @@ export default function DuranteSessao() {
   const [ingestaoTotal, setIngestaoTotal] = useState(0)
   const [rpe, setRpe] = useState(5)
   const [fluidType, setFluidType] = useState('water')
+  const [startTime, setStartTime] = useState('')
 
   const handleEndSession = async () => {
     try {
@@ -28,6 +29,9 @@ export default function DuranteSessao() {
   }
 
   useEffect(() => {
+    const now = new Date();
+    setStartTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
     const interval = setInterval(() => {
       setSegundos((prev) => prev + 1)
     }, 1000)
@@ -70,7 +74,7 @@ export default function DuranteSessao() {
           <span className="text-[var(--color-primary-dark)] font-black text-5xl tracking-tighter font-mono">
             {formatarTempo(segundos)}
           </span>
-          <p className="text-gray-400 text-xs mt-2 font-medium">Corrida · Início 09:14</p>
+          <p className="text-gray-400 text-xs mt-2 font-medium">{currentSession?.sport_modality || 'Corrida'} · Início {startTime}</p>
         </div>
 
         {}
