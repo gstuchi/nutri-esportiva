@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Info, CloudRain, Sun, Cloud, CloudSun } from 'lucide-react'
 
@@ -24,15 +24,67 @@ export default function PreSessao() {
   const [modalidade, setModalidade] = useState('Corrida')
   const [preSessionFluidMl, setPreSessionFluidMl] = useState('')
 
+  const [weatherData, setWeatherData] = useState({ temp: null, umidade: null, exposicao: 'full', exposicaoLabel: 'Desconhecido' })
+  const [isLoadingWeather, setIsLoadingWeather] = useState(true)
+  const [weatherError, setWeatherError] = useState(null)
+
+  useEffect(() => {
+    const fetchWeather = async (lat, lon) => {
+      try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover`);
+        if (!response.ok) throw new Error('Erro na API de tempo');
+        const data = await response.json();
+        
+        const temp = data.current.temperature_2m;
+        const umidade = data.current.relative_humidity_2m;
+        const cloudCover = data.current.cloud_cover;
+        
+        let exposicao = 'full';
+        let exposicaoLabel = 'Sol Pleno';
+        
+        if (cloudCover > 70) {
+          exposicao = 'low';
+          exposicaoLabel = 'Nublado';
+        } else if (cloudCover > 30) {
+          exposicao = 'medium';
+          exposicaoLabel = 'Parcialmente Nublado';
+        }
+
+        setWeatherData({ temp, umidade, exposicao, exposicaoLabel });
+      } catch (err) {
+        console.error(err);
+        setWeatherError('Falha ao carregar clima');
+      } finally {
+        setIsLoadingWeather(false);
+      }
+    };
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          fetchWeather(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.error("Erro de geolocalização:", error);
+          setWeatherError('Permissão de local negada');
+          setIsLoadingWeather(false);
+        }
+      );
+    } else {
+      setWeatherError('Geolocalização não suportada');
+      setIsLoadingWeather(false);
+    }
+  }, []);
+
   const handleStartSession = async () => {
     try {
       await startSession({
         sport_modality: modalidade,
         body_weight_kg: parseFloat(massa),
         urine_color: urineSel,
-        temperature_celsius: 28.5,
-        humidity_percent: 65,
-        solar_exposure: 'full',
+        temperature_celsius: weatherData.temp !== null ? weatherData.temp : 28.5,
+        humidity_percent: weatherData.umidade !== null ? weatherData.umidade : 65,
+        solar_exposure: weatherData.exposicao,
         pre_session_fluid_ml: preSessionFluidMl ? parseInt(preSessionFluidMl) : null,
         pre_session_urine_color: urineSel
       });
@@ -147,21 +199,27 @@ export default function PreSessao() {
               <CloudSun className="w-5 h-5 text-gray-500" />
               Condições Ambientais
             </h2>
-            <p className="text-[var(--color-primary)] text-xs mt-1 font-medium bg-red-50 inline-block px-2 py-0.5 rounded-full">Sincronizado via API Local</p>
+            {isLoadingWeather ? (
+              <p className="text-[var(--color-primary)] text-xs mt-1 font-medium bg-red-50 inline-block px-2 py-0.5 rounded-full">Buscando local e clima...</p>
+            ) : weatherError ? (
+              <p className="text-red-500 text-xs mt-1 font-medium bg-red-50 inline-block px-2 py-0.5 rounded-full">{weatherError}</p>
+            ) : (
+              <p className="text-green-600 text-xs mt-1 font-medium bg-green-50 inline-block px-2 py-0.5 rounded-full">Sincronizado via GPS</p>
+            )}
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-gray-500 text-xs font-semibold mb-1.5 block">Temperatura</label>
               <div className="bg-gray-100/80 border border-gray-200/50 rounded-xl px-4 py-3 flex items-center justify-between cursor-not-allowed">
-                <span className="text-gray-600 font-medium">28.5</span>
+                <span className="text-gray-600 font-medium">{isLoadingWeather ? '--' : (weatherData.temp !== null ? weatherData.temp : '--')}</span>
                 <span className="text-gray-400">°C</span>
               </div>
             </div>
             <div>
               <label className="text-gray-500 text-xs font-semibold mb-1.5 block">Umidade</label>
               <div className="bg-gray-100/80 border border-gray-200/50 rounded-xl px-4 py-3 flex items-center justify-between cursor-not-allowed">
-                <span className="text-gray-600 font-medium">65</span>
+                <span className="text-gray-600 font-medium">{isLoadingWeather ? '--' : (weatherData.umidade !== null ? weatherData.umidade : '--')}</span>
                 <span className="text-gray-400">%</span>
               </div>
             </div>
@@ -170,8 +228,8 @@ export default function PreSessao() {
           <div className="mt-4">
             <label className="text-gray-500 text-xs font-semibold mb-1.5 block">Exposição Solar</label>
              <div className="bg-gray-100/80 border border-gray-200/50 rounded-xl px-4 py-3 flex items-center gap-2 cursor-not-allowed">
-                <Sun className="w-4 h-4 text-orange-400" />
-                <span className="text-gray-600 font-medium text-sm">Sol Pleno</span>
+                {weatherData.exposicao === 'full' ? <Sun className="w-4 h-4 text-orange-400" /> : <Cloud className="w-4 h-4 text-gray-400" />}
+                <span className="text-gray-600 font-medium text-sm">{isLoadingWeather ? '--' : weatherData.exposicaoLabel}</span>
               </div>
           </div>
         </div>
