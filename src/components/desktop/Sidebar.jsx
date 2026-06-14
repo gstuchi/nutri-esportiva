@@ -1,9 +1,22 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, LayoutDashboard, Users, AlertTriangle, FileText, Activity } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore';
+
+const ROLE_LABEL = { coach: 'Treinador', athlete: 'Atleta' };
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuthStore();
+
+  const userName = user?.name || 'Usuário';
+  const userRole = ROLE_LABEL[user?.role] || user?.role || '';
+  const initials = userName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(n => n[0].toUpperCase())
+    .join('');
 
   const menuItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -68,10 +81,10 @@ export default function Sidebar() {
 
       <div className="p-4 mt-auto">
         <div className="bg-[#991B1B] rounded-xl p-3 flex items-center gap-3">
-          <div className="bg-[#D01F25] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm">MR</div>
-          <div>
-            <p className="font-semibold text-sm text-white">Dra. Marina R.</p>
-            <p className="text-white/60 text-xs">Treinador</p>
+          <div className="bg-[#D01F25] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0">{initials}</div>
+          <div className="min-w-0">
+            <p className="font-semibold text-sm text-white truncate">{userName}</p>
+            <p className="text-white/60 text-xs capitalize">{userRole}</p>
           </div>
         </div>
       </div>
