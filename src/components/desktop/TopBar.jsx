@@ -1,6 +1,19 @@
-import { Bell, Search } from 'lucide-react';
+import { Bell } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore';
+
+const ROLE_LABEL = { coach: 'Treinador', athlete: 'Atleta' };
 
 export default function TopBar({ title, subtitle }) {
+  const { user } = useAuthStore();
+
+  const userName = user?.name || 'Usuário';
+  const userRole = ROLE_LABEL[user?.role] || user?.role || '';
+  const initials = userName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(n => n[0].toUpperCase())
+    .join('');
   return (
     <header className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between flex-shrink-0 sticky top-0 z-50">
       <div className="flex flex-col">
@@ -20,11 +33,11 @@ export default function TopBar({ title, subtitle }) {
 
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-bold text-gray-800 leading-none">Dra. Marina R.</p>
-            <p className="text-[10px] text-gray-400 font-bold mt-1">TREINADOR</p>
+            <p className="text-sm font-bold text-gray-800 leading-none">{userName}</p>
+            <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase">{userRole}</p>
           </div>
           <div className="w-10 h-10 bg-[var(--color-primary)] text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-lg shadow-red-500/20 ring-2 ring-white">
-            MR
+            {initials}
           </div>
         </div>
       </div>

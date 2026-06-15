@@ -158,6 +158,10 @@ export const fetchGroupAthletes = async (req: AuthenticatedRequest, res: Respons
             name: true,
             email: true,
             athleteProfile: true,
+            electrolyteAssessments: {
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
             sessions: {
               where: { status: 'completed' },
               orderBy: { sessionDate: 'desc' },
@@ -184,6 +188,7 @@ export const fetchGroupAthletes = async (req: AuthenticatedRequest, res: Respons
         name: ath.name,
         email: ath.email,
         profile: ath.athleteProfile,
+        latestElectrolyteAssessment: ath.electrolyteAssessments?.[0] || null,
         latestSession,
         recentSessions: ath.sessions,
       };

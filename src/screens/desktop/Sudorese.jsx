@@ -1,9 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Activity, Droplets, Bike, Trophy, Waves, Users, Loader2, ArrowLeft } from 'lucide-react'
+import { Activity, Droplets, Bike, Trophy, Waves, Users, Loader2, ArrowLeft, FlaskConical } from 'lucide-react'
 import Sidebar from '../../components/desktop/Sidebar'
 import TopBar from '../../components/desktop/TopBar'
 import { api } from '../../services/api'
+
+const SWEAT_TASTE_LABEL = { salty: 'Salgado', normal: 'Normal', not_sure: 'Não sei' }
+const SWEAT_MARKS_LABEL = { always: 'Sempre', sometimes: 'Às vezes', rarely: 'Raramente' }
+const CRAMP_LABEL = { never: 'Nunca', during: 'Durante o treino', after: 'Após o treino', both: 'Durante e após' }
+const ELECTROLYTE_RISK_BADGE = {
+  low:      'bg-green-50 text-green-700',
+  moderate: 'bg-amber-50 text-amber-700',
+  high:     'bg-red-100 text-red-700 font-bold',
+}
+const ELECTROLYTE_RISK_LABEL = { low: 'Baixo', moderate: 'Moderado', high: 'Alto' }
 
 export default function SudoreseAtleta() {
   const navigate = useNavigate()
@@ -59,6 +69,10 @@ export default function SudoreseAtleta() {
   }
 
   const profile = selectedAthlete?.profile || {}
+  const latestAssessment = selectedAthlete?.latestElectrolyteAssessment || null
+  const age = profile.birthDate
+    ? Math.floor((Date.now() - new Date(profile.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    : null
   const sessions = selectedAthlete?.recentSessions || []
   const completedSessions = sessions.filter(s => s.calculated)
 
@@ -171,7 +185,7 @@ export default function SudoreseAtleta() {
                   <p className="text-sm font-extrabold text-gray-800 text-center mb-1">{selectedAthlete.name}</p>
                   <div>
                     <p className="text-[10px] text-gray-400 uppercase tracking-wide font-bold">Idade</p>
-                    <p className="text-sm font-bold text-gray-700">{profile.age ? `${profile.age} anos` : 'Não informado'}</p>
+                    <p className="text-sm font-bold text-gray-700">{age ? `${age} anos` : 'Não informado'}</p>
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-400 uppercase tracking-wide font-bold">Peso Fisiológico</p>
@@ -182,13 +196,62 @@ export default function SudoreseAtleta() {
                     <p className="text-sm font-bold text-gray-700">{profile.heightCm ? `${profile.heightCm} cm` : 'Não informado'}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide font-bold">Nível de Atividade</p>
-                    <p className="text-sm font-bold text-gray-700 capitalize">{profile.activityLevel || 'Regular'}</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wide font-bold">Modalidade</p>
+                    <p className="text-sm font-bold text-gray-700 capitalize">{profile.modalidadePrincipal || 'Não informado'}</p>
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-400 uppercase tracking-wide font-bold">Contato</p>
                     <p className="text-[10px] font-bold text-gray-500 select-all truncate">{selectedAthlete.email}</p>
                   </div>
+
+                  {/* Perfil Eletrolítico */}
+                  <div className="border-t border-gray-100 pt-3">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <FlaskConical className="w-3.5 h-3.5 text-[var(--color-primary)]" />
+                      <p className="text-[10px] text-[var(--color-primary)] uppercase tracking-wide font-black">Perfil Eletrolítico</p>
+                    </div>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-[10px] text-gray-400 font-bold">Gosto do suor</p>
+                        <p className="text-xs font-semibold text-gray-700">{SWEAT_TASTE_LABEL[profile.sweatTaste] || '—'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 font-bold">Manchas de sal</p>
+                        <p className="text-xs font-semibold text-gray-700">{SWEAT_MARKS_LABEL[profile.sweatMarks] || '—'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 font-bold">Histórico de cãibras</p>
+                        <p className="text-xs font-semibold text-gray-700">{CRAMP_LABEL[profile.crampHistory] || '—'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Última Avaliação Eletrolítica */}
+                  {latestAssessment && (
+                    <div className="border-t border-gray-100 pt-3">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wide font-black mb-2">Última Avaliação</p>
+                      {[
+                        { label: 'Manchas', val: latestAssessment.sweatMarksScore, max: 2 },
+                        { label: 'Cãibras', val: latestAssessment.crampScore, max: 3 },
+                        { label: 'Salgado', val: latestAssessment.saltyScore, max: 2 },
+                        { label: 'Conc.', val: latestAssessment.concentration, max: 2 },
+                      ].map(({ label, val, max }) => (
+                        <div key={label} className="flex items-center gap-2 mb-1.5">
+                          <span className="text-[10px] text-gray-400 w-14 shrink-0">{label}</span>
+                          <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+                            <div
+                              className="bg-[var(--color-primary)] h-1.5 rounded-full transition-all"
+                              style={{ width: `${(val / max) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] font-bold text-gray-500">{val}/{max}</span>
+                        </div>
+                      ))}
+                      <p className="text-[10px] text-gray-400 mt-1.5">
+                        Total: {latestAssessment.sweatMarksScore + latestAssessment.crampScore + latestAssessment.saltyScore + latestAssessment.concentration}/9
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -241,7 +304,8 @@ export default function SudoreseAtleta() {
                         <th className="px-5 py-3 font-bold">Duração</th>
                         <th className="px-5 py-3 font-bold">Taxa</th>
                         <th className="px-5 py-3 font-bold">Perda de Peso</th>
-                        <th className="px-5 py-3 font-bold">Risco</th>
+                        <th className="px-5 py-3 font-bold">Risco Hídrico</th>
+                        <th className="px-5 py-3 font-bold">Risco Eletrólitos</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
@@ -290,12 +354,21 @@ export default function SudoreseAtleta() {
                                   {label}
                                 </span>
                               </td>
+                              <td className="px-5 py-3.5">
+                                {s.calculated?.electrolyteRisk ? (
+                                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${ELECTROLYTE_RISK_BADGE[s.calculated.electrolyteRisk] || 'bg-gray-50 text-gray-500'}`}>
+                                    {ELECTROLYTE_RISK_LABEL[s.calculated.electrolyteRisk] || s.calculated.electrolyteRisk}
+                                  </span>
+                                ) : (
+                                  <span className="text-xs text-gray-400">—</span>
+                                )}
+                              </td>
                             </tr>
                           )
                         })
                       ) : (
                         <tr>
-                          <td colSpan={6} className="px-5 py-8 text-center text-gray-400 text-xs font-semibold">
+                          <td colSpan={7} className="px-5 py-8 text-center text-gray-400 text-xs font-semibold">
                             Nenhum treino concluído por este atleta
                           </td>
                         </tr>
