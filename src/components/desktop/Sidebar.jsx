@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, LayoutDashboard, Users, AlertTriangle, FileText, Activity } from 'lucide-react';
+import { Search, LayoutDashboard, Users, AlertTriangle, FileText } from 'lucide-react';
+import CompassLogo from '../CompassLogo';
 import { useAuthStore } from '../../store/authStore';
 
 const ROLE_LABEL = { coach: 'Treinador', athlete: 'Atleta' };
@@ -30,8 +31,8 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-[#B91C1C] text-white flex flex-col flex-shrink-0 h-screen">
       <div className="p-6 flex items-center gap-3">
-        <div className="bg-white p-1.5 rounded-full">
-          <Activity className="w-6 h-6 text-[#B91C1C]" />
+        <div className="bg-white/20 p-1.5 rounded-full">
+          <CompassLogo size={24} />
         </div>
         <div>
           <h1 className="font-bold text-lg leading-tight">Nutri-Esportiva</h1>
