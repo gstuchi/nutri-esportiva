@@ -93,7 +93,7 @@ export default function Dashboard() {
       allRecentSessions.push({
         athleteName: a.name,
         sportModality: s.sportModality,
-        durationMinutes: s.calculated?.durationMinutes || 0,
+        durationMinutes: (s.calculated?.durationMinutes !== undefined && s.calculated?.durationMinutes !== null) ? s.calculated.durationMinutes : null,
         sweatRate: s.calculated?.sweatRateMlPerHour ? (s.calculated.sweatRateMlPerHour / 1000).toFixed(2) + ' L/h' : 'N/A',
         dehydrationPct: s.calculated?.dehydrationPct ? `-${s.calculated.dehydrationPct.toFixed(1)}%` : 'N/A',
         riskLevel: s.calculated?.riskLevel || 'low',
@@ -309,7 +309,7 @@ export default function Dashboard() {
                         <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/30 transition-colors">
                           <td className="px-4 py-3 font-bold text-gray-800">{s.athleteName}</td>
                           <td className="px-4 py-3 text-gray-500 font-semibold">{s.sportModality}</td>
-                          <td className="px-4 py-3 text-gray-500 font-semibold">{s.durationMinutes} min</td>
+                          <td className="px-4 py-3 text-gray-500 font-semibold">{s.durationMinutes !== null ? `${s.durationMinutes} min` : 'N/A'}</td>
                           <td className="px-4 py-3 text-blue-600 font-extrabold">{s.sweatRate}</td>
                           <td className="px-4 py-3 text-orange-600 font-extrabold">{s.dehydrationPct}</td>
                           <td className="px-4 py-3">
@@ -357,7 +357,7 @@ export default function Dashboard() {
                   <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
                 </button>
                 <button
-                  onClick={() => navigate('/triagem')}
+                  onClick={() => navigate('/triagem-de-risco')}
                   className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left"
                 >
                   <span className="text-xs font-semibold text-purple-600">Triagem de Risco Clínico</span>

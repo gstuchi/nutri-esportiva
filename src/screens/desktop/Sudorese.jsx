@@ -319,7 +319,7 @@ export default function SudoreseAtleta() {
                           })
                           const modality = s.sportModality || 'Treino'
                           const Icone = getIcon(modality)
-                          const duration = s.calculated?.durationMinutes ? `${s.calculated.durationMinutes} min` : '--'
+                          const duration = (s.calculated?.durationMinutes !== undefined && s.calculated?.durationMinutes !== null) ? `${s.calculated.durationMinutes} min` : '--'
                           const sweatRate = s.calculated?.sweatRateMlPerHour ? `${(s.calculated.sweatRateMlPerHour / 1000).toFixed(2)} L/h` : '--'
                           const loss = s.calculated?.dehydrationPct ? `-${s.calculated.dehydrationPct.toFixed(1)}%` : '--'
                           

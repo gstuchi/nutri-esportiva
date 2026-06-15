@@ -9,14 +9,18 @@ function calculateDuration(start: string, end: string): number {
     const [startH, startM] = start.split(':').map(Number);
     const [endH, endM] = end.split(':').map(Number);
 
+    if (isNaN(startH) || isNaN(startM) || isNaN(endH) || isNaN(endM)) {
+      return 0;
+    }
+
     let diff = (endH * 60 + endM) - (startH * 60 + startM);
     if (diff < 0) {
       // Cruzou a meia-noite (adicionar 24 horas)
       diff += 24 * 60;
     }
-    return diff > 0 ? diff : 60; // fallback mínimo de 60 minutos
+    return diff;
   } catch {
-    return 60; // fallback padrão
+    return 0;
   }
 }
 
@@ -45,7 +49,7 @@ export function formatSessionResultsForFrontend(session: any) {
     electrolyte_risk: calc.electrolyteRisk || 'low',
     rehydration_target_ml: calc.rehydrationTargetMl || null,
     rehydration_adherence: calc.rehydrationAdherence || 'none',
-    duration_minutes: calc.durationMinutes || null,
+    duration_minutes: (calc.durationMinutes !== undefined && calc.durationMinutes !== null) ? calc.durationMinutes : null,
     
     // Embedded relationships in expected formats
     initial: {

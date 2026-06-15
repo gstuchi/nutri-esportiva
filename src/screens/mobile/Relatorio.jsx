@@ -56,7 +56,7 @@ export default function Relatorio() {
 
   const lastTraining = {
     type: latestSession.sport_modality || 'Treino',
-    duration: latestSession.duration_minutes ? `${latestSession.duration_minutes} min` : 'N/A',
+    duration: (latestSession.duration_minutes !== undefined && latestSession.duration_minutes !== null) ? `${latestSession.duration_minutes} min` : 'N/A',
     date: latestSession.session_date 
       ? new Date(latestSession.session_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
       : 'N/A',

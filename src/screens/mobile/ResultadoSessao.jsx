@@ -30,7 +30,7 @@ export default function ResultadoSessao() {
   const dehydrationPct = sessionResults?.dehydration_pct 
     ? sessionResults.dehydration_pct.toFixed(1) 
     : '0.0';
-  const duration = sessionResults?.duration_minutes || 0;
+  const duration = sessionResults?.duration_minutes ?? 0;
   const rehydrationTarget = sessionResults?.rehydration_target_ml || 0;
   const postFluid = sessionResults?.post?.post_session_fluid_ml || sessionResults?.postSessionFluidMl || 0;
   const sport = sessionResults?.sport_modality || 'Treino';
