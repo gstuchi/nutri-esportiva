@@ -46,21 +46,21 @@ export default function Perfil() {
   useEffect(() => {
     api.get('/athletes/profile').then(res => {
       const p = res.data.profile
-      // Só carrega dados se o usuário já salvou o perfil antes (sexo preenchido)
-      if (!p || !p.sexo) return
+      if (!p) return
       const heightM = p.heightCm ? (p.heightCm / 100).toFixed(2).replace('.', ',') : ''
       let idade = ''
       if (p.birthDate) {
         const nasc = new Date(p.birthDate)
         const hoje = new Date()
-        idade = String(hoje.getUTCFullYear() - nasc.getUTCFullYear())
+        let anos = hoje.getUTCFullYear() - nasc.getUTCFullYear()
+        idade = String(anos)
       }
       setDados(prev => ({
         ...prev,
         idade,
         peso:       p.weightKg ? String(p.weightKg) : '',
         altura:     heightM,
-        sexo:       p.sexo,
+        sexo:       p.sexo || '',
         modalidade: p.modalidadePrincipal || '',
       }))
     }).catch(() => {})

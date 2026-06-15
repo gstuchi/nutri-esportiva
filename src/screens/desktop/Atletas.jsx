@@ -315,19 +315,35 @@ export default function Atletas() {
             })}
 
             {filteredGroups.length === 0 && !isLoadingAll && (
-              <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
-                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                  <Users className="w-10 h-10 text-gray-200" />
+              apiGroups.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
+                  <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                    <Users className="w-10 h-10 text-[var(--color-primary)]" />
+                  </div>
+                  <p className="text-gray-700 font-extrabold text-lg">Você ainda não tem grupos</p>
+                  <p className="text-gray-400 text-sm mt-1 max-w-xs text-center">Crie um grupo e compartilhe o código com seus atletas para começar.</p>
+                  <button
+                    onClick={openAddModal}
+                    className="mt-6 bg-[var(--color-primary)] text-white text-sm font-black uppercase tracking-widest px-8 py-3.5 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-[var(--color-primary-dark)] transition-all active:scale-95"
+                  >
+                    Criar Primeiro Grupo
+                  </button>
                 </div>
-                <p className="text-gray-500 font-extrabold text-lg">Nenhum resultado encontrado</p>
-                <p className="text-gray-400 text-sm mt-1">Tente buscar por outro nome de atleta</p>
-                <button 
-                  onClick={() => setSearchTerm('')}
-                  className="mt-6 text-[var(--color-primary)] text-sm font-black uppercase tracking-widest hover:underline bg-red-50 px-6 py-3 rounded-2xl"
-                >
-                  Limpar busca
-                </button>
-              </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
+                  <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                    <Users className="w-10 h-10 text-gray-200" />
+                  </div>
+                  <p className="text-gray-500 font-extrabold text-lg">Nenhum resultado encontrado</p>
+                  <p className="text-gray-400 text-sm mt-1">Tente buscar por outro nome de atleta</p>
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="mt-6 text-[var(--color-primary)] text-sm font-black uppercase tracking-widest hover:underline bg-red-50 px-6 py-3 rounded-2xl"
+                  >
+                    Limpar busca
+                  </button>
+                </div>
+              )
             )}
           </div>
         </div>

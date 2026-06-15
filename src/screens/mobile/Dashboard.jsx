@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Scale, Droplets, ClipboardList, ChevronRight, User, AlertCircle } from 'lucide-react'
+import { Scale, Droplets, ClipboardList, ChevronRight, User } from 'lucide-react'
 import BottomNav from '../../components/mobile/BottomNav'
 import { useAuthStore } from '../../store/authStore'
 import { useSessionStore } from '../../store/sessionStore'
-import { api } from '../../services/api'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -50,25 +49,15 @@ export default function Dashboard() {
 
   const hasActive = !!currentSession
 
-  const [perfilCompleto, setPerfilCompleto] = useState(true)
-
-  useEffect(() => {
-    api.get('/athletes/profile').then(res => {
-      const p = res.data.profile
-      const completo = p && p.sexo && p.weightKg && p.heightCm
-      setPerfilCompleto(!!completo)
-    }).catch(() => setPerfilCompleto(false))
-  }, [])
-
   const dynamicFluxo = [
     {
       id: 1,
       title: 'Pré-Sessão',
-      sub: perfilCompleto ? 'Pesagem + condições ambientais' : 'Complete seu perfil primeiro',
+      sub: 'Pesagem + condições ambientais',
       badge: hasActive ? 'CONCLUÍDO' : 'FAZER',
-      path: hasActive ? null : (perfilCompleto ? '/pre-sessao' : null),
+      path: hasActive ? null : '/pre-sessao',
       icon: Scale,
-      active: !hasActive && perfilCompleto
+      active: !hasActive
     },
     {
       id: 2,
@@ -135,22 +124,6 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-
-      {!perfilCompleto && (
-        <div className="px-6 mt-6">
-          <button
-            onClick={() => navigate('/perfil')}
-            className="w-full flex items-center gap-3 bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3 text-left active:scale-95 transition-all"
-          >
-            <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-bold text-orange-700">Complete seu perfil</p>
-              <p className="text-xs text-orange-500 mt-0.5">Preencha peso, altura e sexo para iniciar uma sessão</p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-orange-400 ml-auto flex-shrink-0" />
-          </button>
-        </div>
-      )}
 
       {}
       <div className="px-6 mt-8">

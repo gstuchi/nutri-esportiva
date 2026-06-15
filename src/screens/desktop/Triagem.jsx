@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  AlertTriangle, 
+import {
+  AlertTriangle,
   ArrowRight,
   ShieldCheck,
   Loader2
@@ -9,6 +9,27 @@ import {
 import Sidebar from '../../components/desktop/Sidebar';
 import TopBar from '../../components/desktop/TopBar';
 import { api } from '../../services/api';
+
+const SYMPTOM_PT = {
+  cramps:       'Cãibras',
+  headache:     'Dor de cabeça',
+  fatigue:      'Fadiga',
+  nausea:       'Náusea',
+  dizziness:    'Tontura',
+  vomito:       'Vômito',
+  tontura:      'Tontura',
+  'dor de cabeça': 'Dor de cabeça',
+  'cãibras':    'Cãibras',
+};
+
+function traduzirSintomas(symptomsStr) {
+  return symptomsStr
+    .split(',')
+    .map(s => s.trim().toLowerCase())
+    .filter(s => s && s !== 'none')
+    .map(s => SYMPTOM_PT[s] || s)
+    .join(', ');
+}
 
 export default function Triagem() {
   const navigate = useNavigate();
@@ -89,7 +110,7 @@ export default function Triagem() {
               initials: athlete.name[0],
               signal: 'Risco Eletrolítico',
               indicator: 'Sódio esgotado',
-              limit: 'Salty Sweat',
+              limit: 'Perfil Salino Elevado',
               severity: 'Atenção',
               recommendation: 'Atleta apresenta alto índice de perda de sódio. Incluir eletrólitos/cápsulas de sal.'
             });
@@ -108,7 +129,7 @@ export default function Triagem() {
                 name: athlete.name,
                 initials: athlete.name[0],
                 signal: 'Sintomas Clínicos',
-                indicator: symptomsArray.join(', '),
+                indicator: traduzirSintomas(post.symptoms),
                 limit: 'Sintomático Crítico',
                 severity: 'Crítico',
                 recommendation: 'Sintomas severos relatados (náusea/tontura). Pausar treino e acompanhar clinicamente.'
@@ -121,7 +142,7 @@ export default function Triagem() {
                 name: athlete.name,
                 initials: athlete.name[0],
                 signal: 'Sintomas Clínicos',
-                indicator: symptomsArray.join(', '),
+                indicator: traduzirSintomas(post.symptoms),
                 limit: 'Sintomático Moderado',
                 severity: 'Atenção',
                 recommendation: 'Atleta com dores de cabeça ou cãibras musculares. Ajustar protocolo de eletrólitos.'
