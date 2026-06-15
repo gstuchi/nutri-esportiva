@@ -172,22 +172,7 @@ export default function LoginCadastro() {
           </div>
         </form>
 
-        <div className="mt-8 flex items-center gap-4">
-          <div className="h-[1px] bg-gray-200 flex-1" />
-          <span className="text-xs text-gray-400 font-bold uppercase">Ou continue com</span>
-          <div className="h-[1px] bg-gray-200 flex-1" />
-        </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <button className="flex items-center justify-center gap-2 bg-white border border-gray-100 py-3 rounded-2xl shadow-sm hover:bg-gray-50 transition-colors">
-            <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">G</div>
-            <span className="text-sm font-bold text-gray-700">Google</span>
-          </button>
-          <button className="flex items-center justify-center gap-2 bg-white border border-gray-100 py-3 rounded-2xl shadow-sm hover:bg-gray-50 transition-colors">
-             <div className="w-5 h-5 bg-black rounded-full flex items-center justify-center text-[10px] text-white font-bold">A</div>
-            <span className="text-sm font-bold text-gray-700">Apple</span>
-          </button>
-        </div>
       </div>
     </div>
   );

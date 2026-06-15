@@ -29,6 +29,7 @@ export default function Login() {
   const [email, setEmail]         = useState('')
   const [nome, setNome]           = useState('')
   const [senha, setSenha]         = useState('')
+  const [confirmSenha, setConfirmSenha] = useState('')
   const [verSenha, setVerSenha]   = useState(false)
   const [manter, setManter]       = useState(false)
   
@@ -43,6 +44,11 @@ export default function Login() {
 
     if (!email || !senha) {
       setErrorText('E-mail e senha são obrigatórios.')
+      return
+    }
+
+    if (!isLogin && senha !== confirmSenha) {
+      setErrorText('As senhas não coincidem.')
       return
     }
 
@@ -68,6 +74,7 @@ export default function Login() {
         setIsLogin(true)
         setNome('')
         setSenha('')
+        setConfirmSenha('')
       }
     } catch (err) {
       console.error(err)
@@ -181,6 +188,21 @@ export default function Login() {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-semibold text-[var(--color-text)] mb-1.5">Confirmar Senha</label>
+                <div className="relative">
+                  <input
+                    type={verSenha ? 'text' : 'password'}
+                    placeholder="••••••••••"
+                    value={confirmSenha}
+                    onChange={(e) => setConfirmSenha(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-[var(--color-text)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-[var(--color-primary)] transition-all pr-12"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {isLogin && (
