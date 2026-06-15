@@ -48,6 +48,7 @@ export default function RelatorioDesk() {
 
   const limitDate = new Date();
   limitDate.setDate(limitDate.getDate() - period);
+  limitDate.setHours(0, 0, 0, 0);
 
   const allSessions = [];
   allAthletes.forEach(ath => {
@@ -114,7 +115,7 @@ export default function RelatorioDesk() {
   };
 
   const modalidadesList = Object.entries(modalityCounts).map(([nome, valor]) => {
-    const pct = (valor / maxModalityCount) * 100;
+    const pct = maxModalityCount > 0 ? (valor / maxModalityCount) * 100 : 0;
     return {
       nome,
       valor,
@@ -123,6 +124,32 @@ export default function RelatorioDesk() {
       width: `${pct}%`,
     };
   }).sort((a, b) => b.valor - a.valor);
+
+  const generateChartPath = () => {
+    // Ordenar sessões por data
+    const sortedSessions = [...allSessions].sort((a, b) => new Date(a.sessionDate) - new Date(b.sessionDate));
+    if (sortedSessions.length === 0) return "M 0,95 L 500,95";
+    
+    const sweatRates = sortedSessions.map(s => (s.calculated?.sweatRateMlPerHour || 0) / 1000);
+    const maxRate = Math.max(...sweatRates, 1.5); // Garante um visual melhor se os valores forem muito baixos
+    const minRate = 0;
+    
+    const stepX = sortedSessions.length > 1 ? 500 / (sortedSessions.length - 1) : 250;
+    
+    const points = sortedSessions.map((s, i) => {
+      const rate = (s.calculated?.sweatRateMlPerHour || 0) / 1000;
+      const x = i * stepX;
+      // Mapeia Y de maxRate (altura 10) a minRate (altura 90)
+      const y = 90 - ((rate - minRate) / (maxRate - minRate)) * 80;
+      return `${x},${y}`;
+    });
+
+    if (points.length === 1) {
+      return `M 0,${points[0].split(',')[1]} L 500,${points[0].split(',')[1]}`;
+    }
+
+    return `M ${points.join(' L ')}`;
+  };
 
   const relatoriosDisponiveis = [
     { id: 1, nome: `Avaliação de Hidratação — ${period} dias`, tipo: 'Equipe', periodo: `${period} dias`, geradoEm: 'Hoje 08:00', status: 'Pronto' },
@@ -207,12 +234,13 @@ export default function RelatorioDesk() {
                 <div className="h-48 w-full flex items-end justify-center px-4">
                   <svg className="w-full h-full overflow-visible" viewBox="0 0 500 100" preserveAspectRatio="none">
                     <path 
-                      d="M 0,80 Q 50,75 100,82 T 200,70 T 300,78 T 400,68 T 500,60" 
+                      d={generateChartPath()}
                       fill="none" 
                       stroke="#B91C1C" 
                       strokeWidth="2" 
-                      className="drop-shadow-sm"
+                      className="drop-shadow-sm transition-all duration-500 ease-in-out"
                     />
+                    {/* Eixo X com linha suave base */}
                     <line x1="0" y1="95" x2="500" y2="95" stroke="#E5E7EB" strokeWidth="1" />
                   </svg>
                 </div>

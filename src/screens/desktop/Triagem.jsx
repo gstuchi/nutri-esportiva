@@ -67,9 +67,12 @@ export default function Triagem() {
           const initial = latest.sessionInitial;
           const post = latest.sessionPost;
 
+          let athleteHasCritical = false;
+          let athleteHasAtencao = false;
+
           if (calc?.riskLevel === 'high' || calc?.riskLevel === 'critical') {
             const severity = calc.riskLevel === 'critical' ? 'Crítico' : 'Atenção';
-            if (severity === 'Crítico') criticoCount++; else atencaoCount++;
+            if (severity === 'Crítico') athleteHasCritical = true; else athleteHasAtencao = true;
 
             alerts.push({
               id: `${athlete.id}-dehyd`,
@@ -87,7 +90,7 @@ export default function Triagem() {
           }
 
           if (initial?.urineColor && initial.urineColor >= 5) {
-            atencaoCount++;
+            athleteHasAtencao = true;
             alerts.push({
               id: `${athlete.id}-urine`,
               athleteId: athlete.id,
@@ -102,7 +105,7 @@ export default function Triagem() {
           }
 
           if (calc?.electrolyteRisk === 'high') {
-            atencaoCount++;
+            athleteHasAtencao = true;
             alerts.push({
               id: `${athlete.id}-electro`,
               athleteId: athlete.id,
@@ -122,7 +125,7 @@ export default function Triagem() {
             const hasAttentionSymptoms = symptomsArray.includes('cramps') || symptomsArray.includes('cãibras') || symptomsArray.includes('headache') || symptomsArray.includes('dor de cabeça');
 
             if (hasCriticalSymptoms) {
-              criticoCount++;
+              athleteHasCritical = true;
               alerts.push({
                 id: `${athlete.id}-critsymp`,
                 athleteId: athlete.id,
@@ -135,7 +138,7 @@ export default function Triagem() {
                 recommendation: 'Sintomas severos relatados (náusea/tontura). Pausar treino e acompanhar clinicamente.'
               });
             } else if (hasAttentionSymptoms) {
-              atencaoCount++;
+              athleteHasAtencao = true;
               alerts.push({
                 id: `${athlete.id}-attsymp`,
                 athleteId: athlete.id,
@@ -148,6 +151,12 @@ export default function Triagem() {
                 recommendation: 'Atleta com dores de cabeça ou cãibras musculares. Ajustar protocolo de eletrólitos.'
               });
             }
+          }
+
+          if (athleteHasCritical) {
+            criticoCount++;
+          } else if (athleteHasAtencao) {
+            atencaoCount++;
           }
         });
 
