@@ -10,9 +10,15 @@ import {
   Activity,
   Loader2
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import Sidebar from '../../components/desktop/Sidebar';
 import TopBar from '../../components/desktop/TopBar';
 import { api } from '../../services/api';
+
+const RISK_LABEL = { critical: 'Crítico', high: 'Alto', moderate: 'Moderado', low: 'Saudável' };
+const ELECTRO_LABEL = { high: 'Alto', moderate: 'Moderado', low: 'Baixo' };
 
 export default function RelatorioDesk() {
   const [allAthletes, setAllAthletes] = useState([]);
@@ -48,6 +54,7 @@ export default function RelatorioDesk() {
 
   const limitDate = new Date();
   limitDate.setDate(limitDate.getDate() - period);
+  limitDate.setHours(0, 0, 0, 0);
 
   const allSessions = [];
   allAthletes.forEach(ath => {
@@ -114,7 +121,7 @@ export default function RelatorioDesk() {
   };
 
   const modalidadesList = Object.entries(modalityCounts).map(([nome, valor]) => {
-    const pct = (valor / maxModalityCount) * 100;
+    const pct = maxModalityCount > 0 ? (valor / maxModalityCount) * 100 : 0;
     return {
       nome,
       valor,
@@ -124,11 +131,187 @@ export default function RelatorioDesk() {
     };
   }).sort((a, b) => b.valor - a.valor);
 
+  const generateChartPath = () => {
+    // Ordenar sessões por data
+    const sortedSessions = [...allSessions].sort((a, b) => new Date(a.sessionDate) - new Date(b.sessionDate));
+    if (sortedSessions.length === 0) return "M 0,95 L 500,95";
+    
+    const sweatRates = sortedSessions.map(s => (s.calculated?.sweatRateMlPerHour || 0) / 1000);
+    const maxRate = Math.max(...sweatRates, 1.5); // Garante um visual melhor se os valores forem muito baixos
+    const minRate = 0;
+    
+    const stepX = sortedSessions.length > 1 ? 500 / (sortedSessions.length - 1) : 250;
+    
+    const points = sortedSessions.map((s, i) => {
+      const rate = (s.calculated?.sweatRateMlPerHour || 0) / 1000;
+      const x = i * stepX;
+      // Mapeia Y de maxRate (altura 10) a minRate (altura 90)
+      const y = 90 - ((rate - minRate) / (maxRate - minRate)) * 80;
+      return `${x},${y}`;
+    });
+
+    if (points.length === 1) {
+      return `M 0,${points[0].split(',')[1]} L 500,${points[0].split(',')[1]}`;
+    }
+
+    return `M ${points.join(' L ')}`;
+  };
+
   const relatoriosDisponiveis = [
     { id: 1, nome: `Avaliação de Hidratação — ${period} dias`, tipo: 'Equipe', periodo: `${period} dias`, geradoEm: 'Hoje 08:00', status: 'Pronto' },
     { id: 2, nome: 'Triagem de Risco Clínico Completa', tipo: 'Equipe', periodo: `${period} dias`, geradoEm: 'Hoje 08:00', status: 'Pronto' },
     { id: 3, nome: 'Análise de Reposição Eletrolítica Equipe', tipo: 'Equipe', periodo: `${period} dias`, geradoEm: 'Ontem 18:00', status: 'Pronto' },
   ];
+
+  const exportToExcel = (reportName = 'Relatorio de Hidratacao') => {
+    if (totalSessionsCount === 0) {
+      alert('Não há sessões finalizadas no período selecionado para exportar.');
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    const geradoEm = new Date().toLocaleString('pt-BR');
+
+    // Aba 1 — Resumo
+    const resumo = [
+      ['Relatório de Hidratação — Equipe'],
+      ['Período de análise', `${period} dias`],
+      ['Gerado em', geradoEm],
+      [],
+      ['Taxa Média de Sudorese (L/h)', Number(avgSweatRateVal.toFixed(2))],
+      ['Total de Sessões Registradas', totalSessionsCount],
+      ['Atletas em Risco', riskAthletes.length],
+      ['  - Críticos', criticalCount],
+      ['  - Em Atenção', attentionCount],
+      [],
+      ['Sessões por Modalidade'],
+      ...modalidadesList.map((m) => [m.nome, m.valor]),
+    ];
+    const wsResumo = XLSX.utils.aoa_to_sheet(resumo);
+    wsResumo['!cols'] = [{ wch: 32 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo');
+
+    // Aba 2 — Sessões finalizadas
+    const sessoesData = [...allSessions]
+      .sort((a, b) => new Date(b.sessionDate) - new Date(a.sessionDate))
+      .map((s) => {
+        const c = s.calculated || {};
+        return {
+          'Atleta': s.athleteName,
+          'Modalidade': s.sportModality,
+          'Data': new Date(s.sessionDate).toLocaleString('pt-BR'),
+          'Duração (min)': c.durationMinutes ?? '',
+          'Taxa Sudorese (L/h)': c.sweatRateMlPerHour != null ? Number((c.sweatRateMlPerHour / 1000).toFixed(2)) : '',
+          'Desidratação (%)': c.dehydrationPct != null ? Number(c.dehydrationPct.toFixed(2)) : '',
+          'Score (0-100)': c.dehydrationScore ?? '',
+          'Nível de Risco': RISK_LABEL[c.riskLevel] || c.riskLevel || '',
+          'Risco Eletrolítico': ELECTRO_LABEL[c.electrolyteRisk] || c.electrolyteRisk || '',
+          'Meta Reidratação (mL)': c.rehydrationTargetMl ?? '',
+        };
+      });
+    const wsSessoes = XLSX.utils.json_to_sheet(sessoesData);
+    wsSessoes['!cols'] = [
+      { wch: 18 }, { wch: 12 }, { wch: 20 }, { wch: 13 }, { wch: 18 },
+      { wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 20 },
+    ];
+    XLSX.utils.book_append_sheet(wb, wsSessoes, 'Sessões');
+
+    // Aba 3 — Atletas em Risco
+    const riscoData = riskAthletes.map((a) => {
+      const c = a.latestSession?.calculated || {};
+      return {
+        'Atleta': a.name,
+        'E-mail': a.email,
+        'Modalidade': a.latestSession?.sportModality || '',
+        'Nível de Risco': RISK_LABEL[c.riskLevel] || c.riskLevel || '',
+        'Desidratação (%)': c.dehydrationPct != null ? Number(c.dehydrationPct.toFixed(2)) : '',
+        'Risco Eletrolítico': ELECTRO_LABEL[c.electrolyteRisk] || c.electrolyteRisk || '',
+      };
+    });
+    const wsRisco = XLSX.utils.json_to_sheet(
+      riscoData.length > 0 ? riscoData : [{ 'Atleta': 'Nenhum atleta em risco no período' }]
+    );
+    wsRisco['!cols'] = [{ wch: 18 }, { wch: 24 }, { wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 16 }];
+    XLSX.utils.book_append_sheet(wb, wsRisco, 'Atletas em Risco');
+
+    // Gera e baixa o arquivo
+    const dataArquivo = new Date().toISOString().slice(0, 10);
+    const nomeArquivo = `${reportName.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '_')}_${period}d_${dataArquivo}.xlsx`;
+    XLSX.writeFile(wb, nomeArquivo);
+  };
+
+  const exportToPDF = (reportName = 'Relatorio de Hidratacao') => {
+    if (totalSessionsCount === 0) {
+      alert('Não há sessões finalizadas no período selecionado para exportar.');
+      return;
+    }
+
+    const doc = new jsPDF();
+    const geradoEm = new Date().toLocaleString('pt-BR');
+
+    // Cabeçalho
+    doc.setFontSize(16);
+    doc.setTextColor(185, 28, 28);
+    doc.text('Nutri-Esportiva — Relatório de Hidratação', 14, 18);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Período de análise: ${period} dias`, 14, 26);
+    doc.text(`Gerado em: ${geradoEm}`, 14, 31);
+
+    // Resumo
+    autoTable(doc, {
+      startY: 38,
+      head: [['Indicador', 'Valor']],
+      body: [
+        ['Taxa Média de Sudorese', avgSweatRateText],
+        ['Total de Sessões Registradas', String(totalSessionsCount)],
+        ['Atletas em Risco', String(riskAthletes.length)],
+        ['  - Críticos', String(criticalCount)],
+        ['  - Em Atenção', String(attentionCount)],
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [185, 28, 28] },
+      styles: { fontSize: 9 },
+    });
+
+    // Tabela de Sessões
+    const sessoesSorted = [...allSessions].sort((a, b) => new Date(b.sessionDate) - new Date(a.sessionDate));
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 8,
+      head: [['Atleta', 'Modalidade', 'Data', 'Dur (min)', 'Sudorese (L/h)', 'Desidr (%)', 'Risco']],
+      body: sessoesSorted.map((s) => {
+        const c = s.calculated || {};
+        return [
+          s.athleteName,
+          s.sportModality,
+          new Date(s.sessionDate).toLocaleDateString('pt-BR'),
+          c.durationMinutes != null ? String(c.durationMinutes) : '-',
+          c.sweatRateMlPerHour != null ? (c.sweatRateMlPerHour / 1000).toFixed(2) : '-',
+          c.dehydrationPct != null ? c.dehydrationPct.toFixed(2) : '-',
+          RISK_LABEL[c.riskLevel] || c.riskLevel || '-',
+        ];
+      }),
+      theme: 'striped',
+      headStyles: { fillColor: [185, 28, 28] },
+      styles: { fontSize: 8 },
+      // Destaca em vermelho as linhas de risco alto/crítico
+      didParseCell: (data) => {
+        if (data.section === 'body') {
+          const risco = data.row.raw[6];
+          if (risco === 'Crítico') {
+            data.cell.styles.textColor = [185, 28, 28];
+            data.cell.styles.fontStyle = 'bold';
+          } else if (risco === 'Alto') {
+            data.cell.styles.textColor = [217, 119, 6];
+          }
+        }
+      },
+    });
+
+    const dataArquivo = new Date().toISOString().slice(0, 10);
+    const nomeArquivo = `${reportName.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '_')}_${period}d_${dataArquivo}.pdf`;
+    doc.save(nomeArquivo);
+  };
 
   return (
     <div className="flex h-screen bg-[#F8F9FA] font-sans overflow-hidden">
@@ -170,10 +353,16 @@ export default function RelatorioDesk() {
               </div>
               
               <div className="flex items-center gap-3">
-                <button className="bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors inline-flex items-center gap-2 shadow-[0_2px_10px_-3px_rgba(185,28,28,0.3)]">
+                <button
+                  onClick={() => exportToPDF(`Relatorio de Hidratacao Equipe`)}
+                  className="bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors inline-flex items-center gap-2 shadow-[0_2px_10px_-3px_rgba(185,28,28,0.3)]"
+                >
                   <FileDown className="w-4 h-4" /> PDF
                 </button>
-                <button className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors inline-flex items-center gap-2 shadow-[0_2px_10px_-3px_rgba(16,185,129,0.3)]">
+                <button
+                  onClick={() => exportToExcel(`Relatorio de Hidratacao Equipe`)}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors inline-flex items-center gap-2 shadow-[0_2px_10px_-3px_rgba(16,185,129,0.3)]"
+                >
                   <FileSpreadsheet className="w-4 h-4" /> Excel
                 </button>
               </div>
@@ -207,12 +396,13 @@ export default function RelatorioDesk() {
                 <div className="h-48 w-full flex items-end justify-center px-4">
                   <svg className="w-full h-full overflow-visible" viewBox="0 0 500 100" preserveAspectRatio="none">
                     <path 
-                      d="M 0,80 Q 50,75 100,82 T 200,70 T 300,78 T 400,68 T 500,60" 
+                      d={generateChartPath()}
                       fill="none" 
                       stroke="#B91C1C" 
                       strokeWidth="2" 
-                      className="drop-shadow-sm"
+                      className="drop-shadow-sm transition-all duration-500 ease-in-out"
                     />
+                    {/* Eixo X com linha suave base */}
                     <line x1="0" y1="95" x2="500" y2="95" stroke="#E5E7EB" strokeWidth="1" />
                   </svg>
                 </div>
@@ -277,10 +467,16 @@ export default function RelatorioDesk() {
                         </td>
                         <td className="p-4 pr-6">
                           <div className="flex items-center gap-2">
-                            <button className="bg-[#B91C1C] hover:bg-[#991B1B] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-sm">
+                            <button
+                              onClick={() => exportToPDF(rel.nome)}
+                              className="bg-[#B91C1C] hover:bg-[#991B1B] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                            >
                               <FileDown className="w-3 h-3" /> PDF
                             </button>
-                            <button className="bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-sm">
+                            <button
+                              onClick={() => exportToExcel(rel.nome)}
+                              className="bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                            >
                               <FileSpreadsheet className="w-3 h-3" /> Excel
                             </button>
                           </div>
