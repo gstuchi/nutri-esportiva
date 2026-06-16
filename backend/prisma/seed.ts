@@ -221,26 +221,26 @@ async function main() {
   }
 
   // ── SESSÕES DA ANA (6 treinos) ─────────────────────────────────────
-  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 22, modality: 'Corrida', weightBefore: 62.5, weightAfter: 61.4, waterMl: 500, rpe: 6, durationMin: 75, riskLevel: 'low',      electrolyteRisk: 'moderate', symptoms: 'none' });
-  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 18, modality: 'Corrida', weightBefore: 62.3, weightAfter: 60.5, waterMl: 600, rpe: 8, durationMin: 90, riskLevel: 'high',     electrolyteRisk: 'high',     symptoms: 'cramps,headache' });
-  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 14, modality: 'Corrida', weightBefore: 62.6, weightAfter: 61.4, waterMl: 700, rpe: 6, durationMin: 75, riskLevel: 'low',      electrolyteRisk: 'moderate', symptoms: 'none' });
-  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 10, modality: 'Corrida', weightBefore: 62.5, weightAfter: 60.9, waterMl: 550, rpe: 8, durationMin: 90, riskLevel: 'moderate', electrolyteRisk: 'high',     symptoms: 'fatigue' });
-  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 5,  modality: 'Corrida', weightBefore: 62.8, weightAfter: 61.2, waterMl: 500, rpe: 7, durationMin: 75, riskLevel: 'moderate', electrolyteRisk: 'high',     symptoms: 'cramps' });
-  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 1,  modality: 'Corrida', weightBefore: 62.5, weightAfter: 60.8, waterMl: 600, rpe: 7, durationMin: 90, riskLevel: 'moderate', electrolyteRisk: 'high',     symptoms: 'cramps,headache' });
+  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 22, modality: 'Corrida', weightBefore: 62.5, weightAfter: 61.4, waterMl: 500, rpe: 6, durationMin: 180, riskLevel: 'low', electrolyteRisk: 'moderate', symptoms: 'none' });
+  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 18, modality: 'Corrida', weightBefore: 62.3, weightAfter: 60.5, waterMl: 600, rpe: 8, durationMin: 90, riskLevel: 'high', electrolyteRisk: 'high', symptoms: 'cramps,headache' });
+  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 14, modality: 'Corrida', weightBefore: 62.6, weightAfter: 61.4, waterMl: 700, rpe: 6, durationMin: 75, riskLevel: 'low', electrolyteRisk: 'moderate', symptoms: 'none' });
+  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 10, modality: 'Corrida', weightBefore: 62.5, weightAfter: 60.9, waterMl: 550, rpe: 8, durationMin: 90, riskLevel: 'moderate', electrolyteRisk: 'high', symptoms: 'fatigue' });
+  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 5, modality: 'Corrida', weightBefore: 62.8, weightAfter: 61.2, waterMl: 500, rpe: 7, durationMin: 75, riskLevel: 'moderate', electrolyteRisk: 'high', symptoms: 'cramps' });
+  await criarSessao({ athleteId: ana.id, groupId: group.id, daysAgo: 1, modality: 'Corrida', weightBefore: 62.5, weightAfter: 60.8, waterMl: 600, rpe: 7, durationMin: 90, riskLevel: 'moderate', electrolyteRisk: 'high', symptoms: 'cramps,headache' });
   console.log('✅ 6 sessões da Ana criadas');
 
   // ── SESSÕES DO BRUNO (5 treinos) ───────────────────────────────────
-  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 20, modality: 'Ciclismo', weightBefore: 80.0, weightAfter: 79.2, waterMl: 800, rpe: 5, durationMin: 60,  riskLevel: 'low',      electrolyteRisk: 'low',      symptoms: 'none' });
-  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 15, modality: 'Ciclismo', weightBefore: 80.2, weightAfter: 79.0, waterMl: 600, rpe: 6, durationMin: 75,  riskLevel: 'low',      electrolyteRisk: 'moderate', symptoms: 'none' });
-  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 10, modality: 'Ciclismo', weightBefore: 80.5, weightAfter: 78.9, waterMl: 500, rpe: 7, durationMin: 90,  riskLevel: 'moderate', electrolyteRisk: 'moderate', symptoms: 'fatigue' });
-  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 5,  modality: 'Ciclismo', weightBefore: 80.0, weightAfter: 78.4, waterMl: 700, rpe: 6, durationMin: 90,  riskLevel: 'moderate', electrolyteRisk: 'moderate', symptoms: 'none' });
-  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 2,  modality: 'Ciclismo', weightBefore: 80.3, weightAfter: 78.0, waterMl: 600, rpe: 8, durationMin: 90,  riskLevel: 'high',     electrolyteRisk: 'high',     symptoms: 'fatigue,cramps' });
+  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 20, modality: 'Ciclismo', weightBefore: 80.0, weightAfter: 79.2, waterMl: 800, rpe: 5, durationMin: 60, riskLevel: 'low', electrolyteRisk: 'low', symptoms: 'none' });
+  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 15, modality: 'Ciclismo', weightBefore: 80.2, weightAfter: 79.0, waterMl: 600, rpe: 6, durationMin: 75, riskLevel: 'low', electrolyteRisk: 'moderate', symptoms: 'none' });
+  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 10, modality: 'Ciclismo', weightBefore: 80.5, weightAfter: 78.9, waterMl: 500, rpe: 7, durationMin: 90, riskLevel: 'moderate', electrolyteRisk: 'moderate', symptoms: 'fatigue' });
+  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 5, modality: 'Ciclismo', weightBefore: 80.0, weightAfter: 78.4, waterMl: 700, rpe: 6, durationMin: 90, riskLevel: 'moderate', electrolyteRisk: 'moderate', symptoms: 'none' });
+  await criarSessao({ athleteId: bruno.id, groupId: group.id, daysAgo: 2, modality: 'Ciclismo', weightBefore: 80.3, weightAfter: 78.0, waterMl: 600, rpe: 8, durationMin: 90, riskLevel: 'high', electrolyteRisk: 'high', symptoms: 'fatigue,cramps' });
   console.log('✅ 5 sessões do Bruno criadas');
 
   // ── SESSÕES DA JULIA (3 treinos) ───────────────────────────────────
   await criarSessao({ athleteId: julia.id, groupId: group.id, daysAgo: 15, modality: 'Natação', weightBefore: 55.0, weightAfter: 54.5, waterMl: 400, rpe: 5, durationMin: 60, riskLevel: 'low', electrolyteRisk: 'low', symptoms: 'none' });
-  await criarSessao({ athleteId: julia.id, groupId: group.id, daysAgo: 8,  modality: 'Natação', weightBefore: 55.2, weightAfter: 54.6, waterMl: 450, rpe: 5, durationMin: 60, riskLevel: 'low', electrolyteRisk: 'low', symptoms: 'none' });
-  await criarSessao({ athleteId: julia.id, groupId: group.id, daysAgo: 2,  modality: 'Natação', weightBefore: 55.1, weightAfter: 54.7, waterMl: 500, rpe: 6, durationMin: 60, riskLevel: 'low', electrolyteRisk: 'low', symptoms: 'none' });
+  await criarSessao({ athleteId: julia.id, groupId: group.id, daysAgo: 8, modality: 'Natação', weightBefore: 55.2, weightAfter: 54.6, waterMl: 450, rpe: 5, durationMin: 60, riskLevel: 'low', electrolyteRisk: 'low', symptoms: 'none' });
+  await criarSessao({ athleteId: julia.id, groupId: group.id, daysAgo: 2, modality: 'Natação', weightBefore: 55.1, weightAfter: 54.7, waterMl: 500, rpe: 6, durationMin: 60, riskLevel: 'low', electrolyteRisk: 'low', symptoms: 'none' });
   console.log('✅ 3 sessões da Julia criadas');
 
   console.log('\n🎉 Banco populado com sucesso!');
