@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import CompassLogo from '../../components/CompassLogo';
 
 export default function LoginCadastro() {
   const navigate = useNavigate();
@@ -44,8 +45,8 @@ export default function LoginCadastro() {
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
         
         <div className="bg-white/20 p-4 rounded-3xl backdrop-blur-md mb-6 ring-1 ring-white/30">
-          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-inner">
-             <span className="text-[var(--color-primary)] text-3xl font-black">SC</span>
+          <div className="w-16 h-16 bg-[var(--color-primary)] rounded-2xl flex items-center justify-center shadow-inner">
+             <CompassLogo size={40} />
           </div>
         </div>
         
@@ -172,22 +173,7 @@ export default function LoginCadastro() {
           </div>
         </form>
 
-        <div className="mt-8 flex items-center gap-4">
-          <div className="h-[1px] bg-gray-200 flex-1" />
-          <span className="text-xs text-gray-400 font-bold uppercase">Ou continue com</span>
-          <div className="h-[1px] bg-gray-200 flex-1" />
-        </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <button className="flex items-center justify-center gap-2 bg-white border border-gray-100 py-3 rounded-2xl shadow-sm hover:bg-gray-50 transition-colors">
-            <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">G</div>
-            <span className="text-sm font-bold text-gray-700">Google</span>
-          </button>
-          <button className="flex items-center justify-center gap-2 bg-white border border-gray-100 py-3 rounded-2xl shadow-sm hover:bg-gray-50 transition-colors">
-             <div className="w-5 h-5 bg-black rounded-full flex items-center justify-center text-[10px] text-white font-bold">A</div>
-            <span className="text-sm font-bold text-gray-700">Apple</span>
-          </button>
-        </div>
       </div>
     </div>
   );

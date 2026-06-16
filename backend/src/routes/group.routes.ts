@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createGroup, joinGroup, fetchCoachGroups, fetchGroupAthletes } from '../controllers/group.controller';
+import { createGroup, joinGroup, fetchCoachGroups, fetchGroupAthletes, fetchAthleteGroups } from '../controllers/group.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { roleMiddleware } from '../middlewares/role.middleware';
 
@@ -11,6 +11,7 @@ router.use(authMiddleware);
 router.post('/', roleMiddleware(['coach']), createGroup);
 router.post('/join', roleMiddleware(['athlete']), joinGroup);
 router.get('/coach', roleMiddleware(['coach']), fetchCoachGroups);
+router.get('/athlete', roleMiddleware(['athlete']), fetchAthleteGroups);
 router.get('/:groupId/athletes', roleMiddleware(['coach']), fetchGroupAthletes);
 
 export default router;

@@ -67,14 +67,6 @@ export default function Atletas() {
   }
 
   const openAddModal = () => {
-
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    const numbers = '0123456789'
-    let code = ''
-    for (let i = 0; i < 3; i++) code += letters.charAt(Math.floor(Math.random() * letters.length))
-    for (let i = 0; i < 3; i++) code += numbers.charAt(Math.floor(Math.random() * numbers.length))
-    
-    setNewGroupCode(code)
     setIsModalOpen(true)
   }
 
@@ -380,13 +372,11 @@ export default function Atletas() {
               </div>
 
               <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100">
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Código Sugerido</label>
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-black text-gray-800 tracking-[0.2em]">{newGroupCode}</span>
-                  <div className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-lg uppercase tracking-widest">Gerando...</div>
+                  <span className="text-gray-800 font-bold text-sm">O código será gerado automaticamente.</span>
                 </div>
-                <p className="text-[10px] text-gray-400 mt-4 font-medium italic">
-                  * O código final do grupo será gerado pelo servidor de forma única para que seus atletas entrem nele.
+                <p className="text-[10px] text-gray-400 mt-2 font-medium italic">
+                  * Após a criação, o código único de 6 caracteres do grupo estará disponível na lista. Compartilhe-o com seus atletas.
                 </p>
               </div>
               

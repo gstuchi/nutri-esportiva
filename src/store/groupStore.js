@@ -17,6 +17,16 @@ export const useGroupStore = create((set) => ({
     }
   },
 
+  fetchAthleteGroups: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.get('/groups/athlete');
+      set({ groups: response.data, isLoading: false });
+    } catch (error) {
+      set({ error: error.response?.data?.error || 'Erro ao buscar grupos do atleta', isLoading: false });
+    }
+  },
+
   createGroup: async (name, description) => {
     set({ isLoading: true, error: null });
     try {

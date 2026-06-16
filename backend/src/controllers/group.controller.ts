@@ -21,8 +21,8 @@ export const createGroup = async (req: AuthenticatedRequest, res: Response) => {
     let attempts = 0;
 
     while (!isUnique && attempts < 10) {
-      const randStr = Math.random().toString(36).substring(2, 6).toUpperCase();
-      code = `HID-${randStr}`;
+      const randStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+      code = randStr;
       
       const checkCode = await prisma.group.findUnique({ where: { code } });
       if (!checkCode) {
@@ -198,5 +198,48 @@ export const fetchGroupAthletes = async (req: AuthenticatedRequest, res: Respons
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao buscar atletas do grupo.' });
+  }
+};
+
+export const fetchAthleteGroups = async (req: AuthenticatedRequest, res: Response) => {
+  const athleteId = req.user?.id;
+  if (!athleteId) {
+    return res.status(401).json({ error: 'Não autenticado' });
+  }
+
+  try {
+    const memberships = await prisma.groupMembership.findMany({
+      where: { athleteId, status: 'active' },
+      include: {
+        group: {
+          include: {
+            coach: {
+              select: {
+                name: true
+              }
+            },
+            _count: {
+              select: { memberships: { where: { status: 'active' } } }
+            }
+          }
+        }
+      },
+      orderBy: { joinedAt: 'desc' },
+    });
+
+    // Format the response to be easy for the frontend to consume
+    const groups = memberships.map(m => ({
+      id: m.group.code, // Usando code como id para exibição (GRP-XXXX), ou podemos mandar os dois
+      realId: m.group.id,
+      name: m.group.name,
+      coach: m.group.coach.name,
+      members: m.group._count.memberships,
+      code: m.group.code
+    }));
+
+    return res.status(200).json(groups);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao buscar grupos do atleta.' });
   }
 };

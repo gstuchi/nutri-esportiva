@@ -1,30 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Users, Hash, CheckCircle2, AlertCircle, Trash2 } from 'lucide-react';
+import { ChevronLeft, Users, Hash, CheckCircle2, AlertCircle, Trash2, Loader2 } from 'lucide-react';
 import BottomNav from '../../components/mobile/BottomNav';
+import { useGroupStore } from '../../store/groupStore';
 
 export default function Grupo() {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [status, setStatus] = useState('idle'); // idle, success, error
+  const [loadingJoin, setLoadingJoin] = useState(false);
   
-  // Mock data for current group
-  const [currentGroup, setCurrentGroup] = useState({
-    name: 'Elite Runners SP',
-    coach: 'Roberto Silva',
-    members: 24,
-    id: 'GRP-9922'
-  });
+  const { groups, fetchAthleteGroups, joinGroup, isLoading } = useGroupStore();
 
-  const handleJoin = (e) => {
+  useEffect(() => {
+    fetchAthleteGroups();
+  }, []);
+
+  const handleJoin = async (e) => {
     e.preventDefault();
     if (code.length === 6) {
-      setStatus('success');
-      // TODO: integrar com API para entrar no grupo
-      setTimeout(() => setStatus('idle'), 3000);
-    } else {
-      setStatus('error');
-      setTimeout(() => setStatus('idle'), 3000);
+      setLoadingJoin(true);
+      try {
+        await joinGroup(code);
+        setStatus('success');
+        setCode('');
+        await fetchAthleteGroups();
+        setTimeout(() => setStatus('idle'), 3000);
+      } catch (err) {
+        setStatus('error');
+        setTimeout(() => setStatus('idle'), 3000);
+      } finally {
+        setLoadingJoin(false);
+      }
     }
   };
 
@@ -55,7 +62,7 @@ export default function Grupo() {
               <Hash className="w-5 h-5 text-[var(--color-primary)]" />
               Entrar em um Grupo
             </h2>
-            <p className="text-gray-400 text-xs mt-1">Insira o código de 6 dígitos fornecido pelo seu treinador</p>
+            <p className="text-gray-400 text-xs mt-1">Insira o código de 6 caracteres fornecido pelo seu treinador</p>
           </div>
 
           <form onSubmit={handleJoin} className="space-y-4">
@@ -90,43 +97,49 @@ export default function Grupo() {
 
             <button 
               type="submit"
-              disabled={code.length < 6}
+              disabled={code.length < 6 || loadingJoin}
               className={`w-full font-bold text-base py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
-                code.length === 6 
+                code.length === 6 && !loadingJoin
                   ? 'bg-[var(--color-primary)] text-white shadow-red-500/30 hover:bg-[var(--color-primary-dark)] active:scale-95' 
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
               }`}
             >
-              Confirmar Código
+              {loadingJoin ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmar Código'}
             </button>
           </form>
         </div>
 
         {/* Current Group Info */}
         <div className="space-y-3">
-          <h2 className="text-gray-800 font-bold ml-1">Grupo Atual</h2>
+          <h2 className="text-gray-800 font-bold ml-1">Seus Grupos</h2>
           
-          {currentGroup ? (
-            <div className="bg-white rounded-3xl p-5 shadow-sm ring-1 ring-gray-100 flex items-center gap-4 relative group">
-              <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-[var(--color-primary)]">
-                <Users className="w-8 h-8" />
-              </div>
-              
-              <div className="flex-1">
-                <h3 className="text-gray-800 font-bold text-lg leading-tight">{currentGroup.name}</h3>
-                <p className="text-gray-400 text-sm mt-0.5">Prof. {currentGroup.coach}</p>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="bg-gray-100 text-gray-600 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                    {currentGroup.members} Atletas
-                  </span>
-                  <span className="text-gray-300 font-medium text-[10px]">{currentGroup.id}</span>
-                </div>
-              </div>
-
-              <button className="p-2 text-gray-300 hover:text-red-500 transition-colors">
-                <Trash2 className="w-5 h-5" />
-              </button>
+          {isLoading ? (
+            <div className="flex justify-center py-8 text-[var(--color-primary)]">
+              <Loader2 className="w-8 h-8 animate-spin" />
             </div>
+          ) : groups && groups.length > 0 ? (
+            groups.map((group) => (
+              <div key={group.id} className="bg-white rounded-3xl p-5 shadow-sm ring-1 ring-gray-100 flex items-center gap-4 relative group">
+                <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-[var(--color-primary)]">
+                  <Users className="w-8 h-8" />
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-gray-800 font-bold text-lg leading-tight">{group.name}</h3>
+                  <p className="text-gray-400 text-sm mt-0.5">Prof. {group.coach}</p>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="bg-gray-100 text-gray-600 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                      {group.members} Atletas
+                    </span>
+                    <span className="text-gray-300 font-medium text-[10px]">CÓD: {group.code}</span>
+                  </div>
+                </div>
+
+                <button className="p-2 text-gray-300 hover:text-red-500 transition-colors">
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+            ))
           ) : (
             <div className="bg-white/50 border-2 border-dashed border-gray-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center">
               <Users className="w-12 h-12 text-gray-200 mb-2" />

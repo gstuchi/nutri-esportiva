@@ -2,23 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, ArrowRight, Loader2, AlertCircle } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
+import CompassLogo from '../../components/CompassLogo'
 
-function CompassLogo({ size = 32 }) {
-  return (
-    <svg viewBox="0 0 120 120" width={size} height={size}>
-      <circle cx="60" cy="60" r="56" fill="rgba(255,255,255,0.15)" />
-      <circle cx="60" cy="60" r="44" fill="rgba(255,255,255,0.1)" />
-      <polygon points="60,10 66,52 60,60 54,52" fill="white" />
-      <polygon points="60,110 66,68 60,60 54,68" fill="white" />
-      <polygon points="110,60 68,54 60,60 68,66" fill="white" />
-      <polygon points="10,60 52,54 60,60 52,66" fill="white" />
-      <polygon points="97,23 66,55 60,60 65,53" fill="rgba(255,255,255,0.6)" />
-      <polygon points="23,97 54,65 60,60 55,67" fill="rgba(255,255,255,0.6)" />
-      <polygon points="23,23 55,55 60,60 53,55" fill="rgba(255,255,255,0.6)" />
-      <polygon points="97,97 65,65 60,60 67,65" fill="rgba(255,255,255,0.6)" />
-    </svg>
-  )
-}
 
 export default function Login() {
   const navigate = useNavigate()
@@ -29,6 +14,7 @@ export default function Login() {
   const [email, setEmail]         = useState('')
   const [nome, setNome]           = useState('')
   const [senha, setSenha]         = useState('')
+  const [confirmSenha, setConfirmSenha] = useState('')
   const [verSenha, setVerSenha]   = useState(false)
   const [manter, setManter]       = useState(false)
   
@@ -43,6 +29,11 @@ export default function Login() {
 
     if (!email || !senha) {
       setErrorText('E-mail e senha são obrigatórios.')
+      return
+    }
+
+    if (!isLogin && senha !== confirmSenha) {
+      setErrorText('As senhas não coincidem.')
       return
     }
 
@@ -68,6 +59,7 @@ export default function Login() {
         setIsLogin(true)
         setNome('')
         setSenha('')
+        setConfirmSenha('')
       }
     } catch (err) {
       console.error(err)
@@ -181,6 +173,21 @@ export default function Login() {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-semibold text-[var(--color-text)] mb-1.5">Confirmar Senha</label>
+                <div className="relative">
+                  <input
+                    type={verSenha ? 'text' : 'password'}
+                    placeholder="••••••••••"
+                    value={confirmSenha}
+                    onChange={(e) => setConfirmSenha(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-[var(--color-text)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-[var(--color-primary)] transition-all pr-12"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {isLogin && (
